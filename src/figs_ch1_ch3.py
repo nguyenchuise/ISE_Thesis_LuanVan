@@ -18,7 +18,7 @@ t=h["Turnaround time"]; ax[0].hist(t,bins=40,color=BLUE,alpha=.75,edgecolor="whi
 ax[0].axvline(7,color=RED,lw=2,ls="--"); ax[0].text(7.2,ax[0].get_ylim()[1]*.92,"SLA 7 ngày",color=RED,fontsize=9.5,fontweight="bold")
 ax[0].axvline(t.median(),color=INK,lw=1.2,ls=":"); ax[0].text(t.median()-.3,ax[0].get_ylim()[1]*.92,f"trung vị {t.median():.2f}".replace(".",","),color=INK,fontsize=8.5,ha="right")
 ax[0].set_xlabel("Thời gian xử lý (ngày)"); ax[0].set_ylabel("Số hồ sơ")
-ax[0].set_title(f"(A) {int((t>7).sum())}/1.500 hồ sơ ({(t>7).mean()*100:.1f}%) vượt cam kết".replace(".1f","").replace("37.7","37,7"))
+ax[0].set_title(f"(A) {int((t>7).sum())}/{len(t):,} hồ sơ ({(t>7).mean()*100:.1f}%) vượt cam kết".replace(",",".").replace(f"{(t>7).mean()*100:.1f}",f"{(t>7).mean()*100:.1f}".replace(".",",")))
 ST=["Sales_Days","WBS_Days","SC_Days","Pricing_Days"]; SN=["Sales","WBS","SC","Pricing"]
 med=[h[s].median() for s in ST]; cols=[CYAN,BLUE,GREEN,RED]
 bars=ax[1].bar(SN,med,color=cols,alpha=.85)
@@ -37,7 +37,7 @@ ax2.plot(lab,mk,"o-",color=DRED,lw=2.4,ms=8,label="Hệ số markup"); ax2.set_y
 for x_,v in zip(lab,mk): ax2.text(x_,v+.006,f"{v:.4f}".replace(".",","),ha="center",fontsize=9,color=DRED,fontweight="bold")
 ax2.set_ylabel("Hệ số markup trung bình",color=DRED); ax2.spines["right"].set_visible(True); ax2.spines["right"].set_color(BORDER)
 ax1.set_xlabel("Cường độ cạnh tranh")
-ax1.set_title("Tỷ lệ thắng giảm 18,9 điểm % trong khi markup chỉ đổi 0,35 điểm %")
+ax1.set_title(f"Tỷ lệ thắng giảm {(wr[0]-wr[2]):.1f} điểm % trong khi markup chỉ đổi {S['bien_do_markup_giua_3_muc']*100:.2f} điểm %".replace(".",","))
 h1_,l1=ax1.get_legend_handles_labels(); h2_,l2=ax2.get_legend_handles_labels(); ax1.legend(h1_+h2_,l1+l2,loc="lower left",fontsize=8.5)
 plt.tight_layout(); plt.savefig("FIG_1_2_Markup_vs_WinRate.png"); plt.close()
 
@@ -46,7 +46,7 @@ fig,ax=plt.subplots(figsize=(15.6,8.0)); ax.set_xlim(0,100); ax.set_ylim(3.4,33.
 def box(x,y,w,h_,fc,ec,lw=1.3,z=3,r=0.5): ax.add_patch(FancyBboxPatch((x,y),w,h_,boxstyle=f"round,pad=0.18,rounding_size={r}",fc=fc,ec=ec,lw=lw,zorder=z))
 def txt(x,y,s,sz=9,c=INK,b=False): ax.text(x,y,s,ha="center",va="center",fontsize=sz,color=c,fontweight="bold" if b else "normal",linespacing=1.5,zorder=6)
 box(3,27.6,94,4.4,"#262626","#262626",1.4,2,0.6)
-txt(50,29.8,"Bài toán nghiệp vụ:  báo giá B2B — 37,7% vi phạm SLA 7 ngày  &  hệ số markup không phản ứng với cạnh tranh",10.2,"#FFFFFF",True)
+txt(50,29.8,f"Bài toán nghiệp vụ:  báo giá B2B — {S['sla']['ty_le_vi_pham']*100:.1f}% vi phạm SLA 7 ngày  &  hệ số markup không phản ứng với cạnh tranh".replace(".",","),10.2,"#FFFFFF",True)
 box(3,17.0,94,8.6,"#FFFFFF",NAVY,1.8,2,0.6); box(3,22.6,94,3.0,NAVY,NAVY,1.6,3,0.6)
 txt(50,24.1,"TRỤC 1 — KHAI PHÁ DỮ LIỆU  ·  sáu pha CRISP-DM  ·  BT1 và BT2",10.4,"#FFFFFF",True)
 PH=[("Business\nUnderstanding",NAVY),("Data\nUnderstanding",BLUE),("Data\nPreparation",GREEN),("Modeling",GOLD),("Evaluation &\nDiagnostics",RED),("Deployment",DRED)]
@@ -57,11 +57,12 @@ for j,(nm,c) in enumerate(PH):
 txt(50,16.0,"Đầu ra trục 1:  TAT dự báo theo khâu (BT1)  →  làm biến của BT2  →  P(Win | p, x) đã hiệu chuẩn (BT2)",8.6,NAVY,True)
 ax.add_patch(FancyArrowPatch((50,15.2),(50,13.6),arrowstyle="-|>",mutation_scale=14,color=MUTE,lw=1.6,zorder=6))
 box(3,5.0,94,8.4,"#FFFFFF",RED,1.8,2,0.6); box(3,10.4,94,3.0,RED,RED,1.6,3,0.6)
-txt(50,11.9,"TRỤC 2 — TỐI ƯU GIÁ VÀ KIỂM ĐỊNH GIẢ THUYẾT  ·  BT3",10.4,"#FFFFFF",True)
-EX=[(4.5,"Khung CBPO","Tối ưu (p−c)·P(Win|p,x)\ngiải số theo FOC"),(28.3,"Chính sách cân bằng — H1","β*(c) theo Krishna (2009)\nhiệu chỉnh N, kiểm định log–log"),
-    (52.1,"Giá bóng năng lực — H2","λ(Q) từ ngoại tác nghẽn\nkiểm chứng giả dược"),(75.9,"Đánh giá & độ nhạy","Cùng tập kiểm tra tách theo dự án\nN, họ F, π_SLA; thiết kế A/B")]
+txt(50,11.9,"TRỤC 2 — TỐI ƯU GIÁ, KIỂM ĐỊNH GIẢ THUYẾT VÀ MÔ PHỎNG ĐIỀU PHỐI  ·  BT3 + Mục 4.4",10.4,"#FFFFFF",True)
+EX=[(4.5,"Khung CBPO","Tối ưu (p−c)·P(Win|p,x)\ngiải số theo FOC"),(23.2,"Cân bằng BNE — H1","Đặc tả A, B, C (Krishna, 2009)\nkiểm định log–log hai mặt"),
+    (41.9,"Giá bóng năng lực — H2","λ(Q), λ(Q)·U từ ngoại tác\nnghẽn; kiểm chứng giả dược"),(60.6,"Mô phỏng liên kỳ (4.4)","Hàng đợi Pricing + phân luồng\nSales-WBS; mặt phẳng chuyển pha"),
+    (79.3,"Độ nhạy & A/B","N, họ F, π_SLA, nhãn;\nICC, DEFF, thiết kế 3 nhánh")]
 for x,t1,t2 in EX:
-    box(x,5.6,20.6,4.4,LIGHT,RED,1.2,4); txt(x+10.3,8.9,t1,9.0,INK,True); txt(x+10.3,7.0,t2,7.6,BODY)
+    box(x,5.6,16.4,4.4,LIGHT,RED,1.2,4); txt(x+8.2,8.9,t1,8.6,INK,True); txt(x+8.2,7.0,t2,7.2,BODY)
 plt.tight_layout(); plt.savefig("FIG_3_1_Methodology.png"); plt.close()
 from PIL import Image
 for fn_ in ["FIG_1_1_TAT_SLA_Bottleneck.png","FIG_1_2_Markup_vs_WinRate.png","FIG_3_1_Methodology.png"]:

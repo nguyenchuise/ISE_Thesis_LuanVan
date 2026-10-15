@@ -36,22 +36,26 @@ const fx=(lines)=>new Paragraph({alignment:AlignmentType.LEFT,spacing:{before:80
   border:{left:{style:BorderStyle.SINGLE,size:14,color:C.BLUE},top:{style:BorderStyle.SINGLE,size:2,color:"DCE6EE"},
     bottom:{style:BorderStyle.SINGLE,size:2,color:"DCE6EE"},right:{style:BorderStyle.SINGLE,size:2,color:"DCE6EE"}},
   indent:{left:120,right:60},
-  children:lines.flatMap((l,i)=>[...(i?[new TextRun({break:1})]:[]),new TextRun({text:l,font:MONO,size:17,color:C.INK})])});
+  keepLines:true,
+  children:lines.flatMap((l,i)=>[...(i?[new TextRun({break:1})]:[]),new TextRun({text:l.length?l:" ",font:FONT,size:22,color:C.INK})])});
 const path=require("path");
-const img=(f,w,r)=>new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:120,after:40},
-  children:[new ImageRun({type:"png",data:fs.readFileSync(path.isAbsolute(f)?f:path.join(__dirname,f)),transformation:{width:w,height:Math.round(w*r)}})]});
+const img=(f,w,r)=>{const buf=fs.readFileSync(path.isAbsolute(f)?f:path.join(__dirname,f));
+  const rr=buf.readUInt32BE(20)/buf.readUInt32BE(16);   // ty le that doc tu header PNG (bo qua r truyen vao)
+  return new Paragraph({alignment:AlignmentType.CENTER,keepNext:true,spacing:{before:120,after:40},
+  children:[new ImageRun({type:"png",data:buf,transformation:{width:w,height:Math.round(w*rr)}})]});};
 const pb=()=>new Paragraph({children:[new PageBreak()]});
 const CM={top:60,bottom:60,left:100,right:100};
 function mkTable(hd,rows,w,hl,left){
+  const kn=rows.length<=16;   // giu bang ngan (va chu thich ben duoi) tren cung mot trang
   const bd={style:BorderStyle.SINGLE,size:4,color:C.BORDER}; const bs={top:bd,bottom:bd,left:bd,right:bd};
-  const head=new TableRow({tableHeader:true,children:hd.map((t,k)=>new TableCell({
+  const head=new TableRow({tableHeader:true,cantSplit:true,children:hd.map((t,k)=>new TableCell({
     width:{size:w[k],type:WidthType.DXA},shading:{type:ShadingType.CLEAR,fill:C.RED},margins:CM,borders:bs,
-    children:[new Paragraph({alignment:AlignmentType.CENTER,children:[run(t,{size:22,bold:true,color:"FFFFFF"})]})]}))});
-  const body=rows.map((r,ri)=>new TableRow({children:r.map((t,ci)=>new TableCell({
+    children:[new Paragraph({alignment:AlignmentType.CENTER,keepNext:kn,children:[run(t,{size:22,bold:true,color:"FFFFFF"})]})]}))});
+  const body=rows.map((r,ri)=>new TableRow({cantSplit:true,children:r.map((t,ci)=>new TableCell({
     width:{size:w[ci],type:WidthType.DXA},
     shading:{type:ShadingType.CLEAR,fill:(hl&&hl.includes(ri))?"FFF3F3":(ri%2?C.LIGHT:"FFFFFF")},margins:CM,borders:bs,
-    children:[new Paragraph({alignment:(ci===0||left)?AlignmentType.LEFT:AlignmentType.CENTER,
-      children:String(t).split("\n").map((q,qi)=>new TextRun({text:q,font:/[=^√Σ∂]/.test(q)?MONO:FONT,size:22,color:C.INK,break:qi?1:0}))})]}))}));
+    children:[new Paragraph({alignment:(ci===0||left)?AlignmentType.LEFT:AlignmentType.CENTER,keepNext:kn,
+      children:String(t).split("\n").map((q,qi)=>new TextRun({text:q,font:FONT,size:22,color:C.INK,break:qi?1:0}))})]}))}));
   return new Table({columnWidths:w,width:{size:w.reduce((a,b)=>a+b,0),type:WidthType.DXA},rows:[head,...body]});
 }
 function build(kids,outFile){

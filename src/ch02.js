@@ -149,7 +149,16 @@ k.push(fx([
 "",
 "Diễn giải xác suất: biên giá = kỳ vọng chi phí thấp nhất trong",
 "N − 1 đối thủ, với điều kiện tất cả đều cao hơn c."]));
-k.push(p("Nghiệm này sinh ra hai hệ quả so sánh tĩnh có thể kiểm định trực tiếp trên dữ liệu. Thứ nhất, biên giá giảm khi số đối thủ tăng, với độ co giãn của logarit markup theo logarit số đối thủ xấp xỉ âm một trong trường hợp phân phối đều. Thứ hai, trong trạng thái cân bằng đối xứng, mỗi bên thắng với xác suất bằng một chia cho số đối thủ. Hai hệ quả này là cơ sở cho giả thuyết H1 đã phát biểu ở mục 1.5."));
+k.push(p("Khi áp nghiệm này cho danh mục vật tư dị chất, cận trên c_max không thể là một hằng số chung. Cách vận hành hóa tự nhiên là áp công thức ở cấp từng dòng hàng i, với cận trên riêng c̄_i và số đối thủ N_i của cơ hội chứa dòng hàng đó. Cần nói rõ đây là phép ánh xạ — mỗi dòng hàng được coi như một cuộc đấu thầu độc lập với giá trị riêng tư độc lập — chứ không phải một định lý mới; tính hợp lệ của phép ánh xạ là điều luận văn kiểm tra bằng dữ liệu ở Chương 4."));
+k.push(fx([
+"Vận hành hóa ở cấp dòng hàng (chi phí đều trên [c_min,i , c̄_i]):",
+"    p*_i = c_i + ( c̄_i − c_i ) / N_i",
+"",
+"Biên giá tương đối:   p*_i / c_i − 1 = δ_i / N_i ,   với δ_i = c̄_i / c_i − 1",
+"Logarit hóa:          ln( p*_i / c_i − 1 ) = ln δ_i − ln N_i",
+"",
+"→ Độ co giãn theo N bằng −1 khi δ_i không tương quan với N_i."]));
+k.push(p("Nghiệm này sinh ra hai hệ quả so sánh tĩnh có thể kiểm định trực tiếp trên dữ liệu. Thứ nhất, biên giá giảm khi số đối thủ tăng, với độ co giãn của logarit biên giá theo logarit số đối thủ xấp xỉ âm một trong trường hợp phân phối đều. Dạng logarit hóa ở trên cũng cho thấy một lưu ý phương pháp quan trọng: nếu chính sách giá được SINH RA từ công thức này rồi hồi quy ngược theo N, độ dốc xấp xỉ −1 là hệ quả của định nghĩa, không phải bằng chứng thực nghiệm. Kiểm định có nội dung thực nghiệm phải dùng mức giá không được xây dựng từ công thức — tức giá lịch sử, hoặc giá tối ưu giải từ một mô hình phản hồi ước lượng độc lập. Thứ hai, trong trạng thái cân bằng đối xứng, mỗi bên thắng với xác suất bằng một chia cho số đối thủ. Hai hệ quả này là cơ sở cho giả thuyết H1 đã phát biểu ở mục 1.5."));
 
 k.push(h3("2.2.4. Nhánh Revenue Management và giá bóng của năng lực"));
 k.push(p("Nhánh lý thuyết thứ hai xử lý câu hỏi định giá khi năng lực phục vụ hữu hạn. Gallego và van Ryzin (1994) chứng minh rằng giá tối ưu trong bài toán định giá động phản ánh giá trị cận biên của một đơn vị năng lực còn lại, chứ không chỉ phản ánh chi phí biên của sản phẩm."));
@@ -163,7 +172,16 @@ k.push(fx([
 "",
 "    r = giá trị yêu cầu ; a_j = lượng tài nguyên j mà nó tiêu thụ",
 "    λ_j = giá bóng của tài nguyên j"]));
-k.push(p("Điểm quan trọng về mặt vận hành: cơ chế bid-price control ở dạng nguyên bản là một quy tắc về quyết định TIẾP NHẬN, không phải quy tắc về mức giá. Nó trả lời câu hỏi có nên nhận yêu cầu này hay không, chứ không trả lời câu hỏi nên chào bao nhiêu. Việc chuyển khái niệm giá bóng từ biến quyết định tiếp nhận sang biến quyết định giá là một bước ánh xạ cần được kiểm chứng chứ không được mặc nhiên thừa nhận. Giả thuyết H2 ở mục 1.5 chính là phát biểu kiểm định được của bước ánh xạ này."));
+k.push(p("Khi quyết định không phải nhận hay từ chối mà là xử lý hồ sơ nào trước, tài liệu lý thuyết hàng đợi và điều độ cung cấp các quy tắc ưu tiên có nền tảng chứng minh. Quy tắc cμ (Cox & Smith, 1961) chứng minh rằng với chi phí chờ tuyến tính, phục vụ theo thứ tự giảm dần của tích chi phí chờ đơn vị và tốc độ phục vụ là tối ưu trong hàng đợi một máy. Với chi phí phát sinh khi trễ hạn, quy tắc ATC (Apparent Tardiness Cost) của Vepsalainen và Morton (1987) bổ sung hệ số chiết khấu theo thời gian dự phòng còn lại tới hạn chót."));
+k.push(fx([
+"Quy tắc cμ (Cox & Smith, 1961):     ưu tiên  max_j  c_j · μ_j  =  c_j / w_j",
+"",
+"Quy tắc ATC (Vepsalainen & Morton, 1987):",
+"    I_j(t) = ( ω_j / w_j ) · exp( − max( d_j − w_j − t , 0 ) / ( K · w̄ ) )",
+"",
+"    ω_j = trọng số chi phí trễ ;  w_j = thời gian xử lý ;  d_j = hạn chót",
+"    w̄ = thời gian xử lý trung bình ;  K = tham số chiết khấu"]));
+k.push(p("Điểm quan trọng về mặt vận hành: cơ chế bid-price control ở dạng nguyên bản là một quy tắc về quyết định TIẾP NHẬN, không phải quy tắc về mức giá. Nó trả lời câu hỏi có nên nhận yêu cầu này hay không, chứ không trả lời câu hỏi nên chào bao nhiêu. Việc chuyển khái niệm giá bóng từ biến quyết định tiếp nhận sang biến quyết định giá là một bước ánh xạ cần được kiểm chứng chứ không được mặc nhiên thừa nhận. Giả thuyết H2 ở mục 1.5 chính là phát biểu kiểm định được của bước ánh xạ này. Một bước ánh xạ thứ hai cũng cần kiểm chứng: dùng giá bóng làm tiêu chí HOÃN (xếp sau trong hàng đợi) thay vì tiêu chí TỪ CHỐI. Hai hành động này khác nhau về bản chất — từ chối giải phóng năng lực, còn hoãn chỉ dời chi phí chờ sang chính hồ sơ bị hoãn — và Mục 4.4 cho thấy khác biệt này quyết định hiệu quả của cơ chế."));
 
 k.push(h3("2.2.5. Hai hướng được khai báo loại trừ khỏi phạm vi"));
 k.push(p("Hai nhánh lý thuyết sau đây phù hợp về mặt khái niệm với bài toán nhưng không khả thi với dữ liệu hiện có. Việc khai báo tường minh nhằm xác định rõ ranh giới phạm vi nghiên cứu."));

@@ -1,6 +1,8 @@
 # CHỈ SỐ SO SÁNH MÔ HÌNH VÀ CÔNG THỨC BA BÀI TOÁN
 
-> Ghi chú 15-10-2026: tài liệu này viết ngày 16-09, trước khi TAT_pred (OOF) được ghép vào BT2. Công thức và lập luận vẫn đúng. Một vài con số đã được thay trong `SoT_v2_SoLieuChuan.md` — khi lệch, dùng SoT_v2. Ví dụ: AUC ngoài mẫu 0,7770 (không phải 0,7767), Brier 0,1820, Markup_Pct p = 0,749 (không phải 0,584).
+> Ghi chú v3.0 (15-10-2026): số liệu hiện hành ở `SoT_v3_SoLieuChuan.md`; công thức Nash C, H1 hai mặt, λ_U(Q) và quy tắc phân luồng G2 xem Chương 2–3 luận văn v3.0.
+>
+> Ghi chú 15-10-2026 (v2): tài liệu này viết ngày 16-09, trước khi TAT_pred (OOF) được ghép vào BT2. Công thức và lập luận vẫn đúng. Một vài con số đã được thay trong `SoT_v2_SoLieuChuan.md` — khi lệch, dùng SoT_v2. Ví dụ: AUC ngoài mẫu 0,7770 (không phải 0,7767), Brier 0,1820, Markup_Pct p = 0,749 (không phải 0,584).
 
 Bổ sung cho `BanGiao_HuongMoi_SauReview.md`. Phản hồi hai yêu cầu của GVHD ngày 16-09-2026.
 

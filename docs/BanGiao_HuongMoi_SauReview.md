@@ -1,3 +1,5 @@
+> **Bản bàn giao v2.0 — đã có bản mới `BanGiao_v3.0_DuLieuV3.md`.**
+
 # BÀN GIAO — LUẬN VĂN v2.0 HOÀN CHỈNH (17-09-2026)
 
 **Nguồn số liệu chuẩn hiện hành: `SoT_v2_SoLieuChuan.md`.** File `LEGACY_SoT_SoLieuChuan_v1_XGB.md` chỉ còn giá trị lịch sử (số BT3 từ pipeline XGBoost, đã bị thay).

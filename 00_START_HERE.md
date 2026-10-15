@@ -1,6 +1,6 @@
-# 00 — BẮT ĐẦU TẠI ĐÂY · Luận văn Thạc sĩ Chu Thái Nguyên (v2.0)
+# 00 — BẮT ĐẦU TẠI ĐÂY · Luận văn Thạc sĩ Chu Thái Nguyên (v3.0)
 
-*Cập nhật 15-10-2026. Đây là file bàn giao cho phiên làm việc mới (Claude Cloud session, Colab, hoặc máy cá nhân). Đọc file này trước, sau đó đọc `docs/SoT_v2_SoLieuChuan.md`.*
+*Cập nhật 15-10-2026 (v3.0 — bộ dữ liệu v3 có trường CRM/Sourcing và nhãn đã đối soát). Đọc file này trước, sau đó đọc `docs/BanGiao_v3.0_DuLieuV3.md` và `docs/SoT_v3_SoLieuChuan.md`.*
 
 ---
 
@@ -8,24 +8,21 @@
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Bản luận văn | `ChuThaiNguyen_LuanVan_v2.0.docx` — 65 trang, **hoàn chỉnh** Chương 1–6 + Tài liệu tham khảo (27 mục, APA 7) + Phụ lục A/B/C |
-| Thành phần | Bìa · cam đoan · Tóm tắt · Abstract · Mục lục (TOC field) · viết tắt · danh sách 10 hình · danh sách 41 bảng · 6 footnote · số trang |
-| Nguồn số liệu | **Mọi con số ở Chương 4–6, Tóm tắt, Phụ lục do JS đọc từ JSON lúc build — không gõ tay** |
-| Tái lập | `bash run_all.sh` từ 2 CSV → 9 JSON + 10 PNG + docx. Đã kiểm chứng clean-room: JSON byte-identical, văn bản docx giống hệt, ~40 giây |
-| Bản trên Drive `ChuThaiNguyen_LuanVan_v1.0.docx` | Văn bản **giống hệt v2.0** (chỉ được mở-lưu lại trong Word). Không mất chỉnh sửa nào. Không xóa / không ghi đè |
-| Tên đề tài | *Ứng dụng Khai phá Dữ liệu trong Dự báo Thời gian Xử lý và Tối ưu hóa Giá Báo thầu tại Doanh nghiệp Phân phối Vật tư Công nghiệp B2B* |
-| GVHD | TS. Nguyễn Vạng Phúc Nguyên · HCMUT · ngành Kỹ thuật Hệ thống Công nghiệp · MSSV 2470590 |
-
----
+| Bản luận văn | `ChuThaiNguyen_LuanVan_v3.0.docx` / `.pdf` — ~84 trang, Chương 1–6 + TLTK (29 mục) + Phụ lục A/B/C; 12 hình, 49 bảng |
+| Dữ liệu | `src/HeadView_Workload.csv` (1.500 × 31), `src/ItemView_Workload.csv` (8.249 × 23), `src/ItemView_Workload_v1_NhanTruocDoiSoat.csv` (nhãn bản nháp, dùng cho độ nhạy) |
+| Mới ở v3.0 | Đặc tả Nash C (§4.3), H1 hai mặt (Bảng 4.14), λ(Q)·U, **§4.4 mô phỏng liên kỳ** (hàng đợi + phân luồng Sales-WBS, mặt phẳng chuyển pha), A/B 3 nhánh, kiểm toán dữ liệu + độ nhạy nhãn (§3.1.2, §4.2.5, Bảng B.4–B.5) |
+| Nguồn số liệu | **Mọi con số ở Chương 1, 3–6, Tóm tắt, Phụ lục do JS đọc từ JSON lúc build — không gõ tay**; `docs/SoT_v3_SoLieuChuan.md` sinh tự động |
+| Tái lập | `bash src/run_all.sh` (~17 phút do mô phỏng; thử nhanh `SIM_R=20 SIM_RG=5 bash src/run_all.sh`) |
+| Cảnh báo liêm chính dữ liệu | Xem `docs/BanGiao_v3.0_DuLieuV3.md` §2: 190 nhãn đổi theo quy luật độ sâu hàng đợi; Urgency là trường dẫn xuất. Đã khai báo trong luận văn |
 
 ## 2. Bản đồ thư mục Drive
 
 ```
 [ISE_Thesis] (thư mục gốc — 1BEsD12uWr1NbxBbbL3cqNJ2f-QlPZWmU)
 ├── 00_START_HERE.md                       ← file này
-├── ChuThaiNguyen_LuanVan_v2.0.docx        ← (kéo thả thủ công — xem §8)
-├── ChuThaiNguyen_LuanVan_v2.0.pdf         ← (kéo thả thủ công)
-├── ChuThaiNguyen_LuanVan_v2.0_MaNguon.zip ← (kéo thả thủ công) toàn bộ src + JSON + PNG + CSV
+├── ChuThaiNguyen_LuanVan_v3.0.docx        ← (kéo thả thủ công — xem §8)
+├── ChuThaiNguyen_LuanVan_v3.0.pdf         ← (kéo thả thủ công)
+├── ChuThaiNguyen_LuanVan_v3.0_MaNguon.zip ← (kéo thả thủ công) toàn bộ src + JSON + PNG + CSV
 ├── ChuThaiNguyen_LuanVan_v1.0.docx        ← bản cũ = v2.0, giữ nguyên
 ├── ChuThaiNguyen_TomTatSuon_… Sep 12.docx ← file của tài khoản khác, KHÔNG động vào
 ├── Untitled0.ipynb                        ← notebook Colab của anh, không động vào
@@ -35,7 +32,9 @@
 │   ├── 10 script Python (xem §4)
 │   └── build_all.js, thesis_lib.js, front.js, back.js, ch01.js … ch06.js
 └── docs/  (1PjjImHwehHThnGv8egDdvjWbwylzRfLj)
-    ├── SoT_v2_SoLieuChuan.md              ← NGUỒN SỐ LIỆU CHUẨN HIỆN HÀNH
+    ├── SoT_v3_SoLieuChuan.md              ← NGUỒN SỐ LIỆU CHUẨN HIỆN HÀNH (sinh tự động)
+    ├── BanGiao_v3.0_DuLieuV3.md           ← bàn giao v3.0 + kiểm toán dữ liệu
+    ├── SoT_v2_SoLieuChuan.md              ← lỗi thời, chỉ tra lịch sử
     ├── BanGiao_HuongMoi_SauReview.md      ← bàn giao v2.0 (17-09)
     ├── ChiSoModel_va_CongThuc.md          ← R² vs R² hiệu chỉnh + công thức BT1/2/3
     └── LEGACY_SoT_SoLieuChuan_v1_XGB.md   ← chỉ để tra lịch sử, KHÔNG dùng số
@@ -50,7 +49,7 @@ JSON, PNG, `bt2_scored.pkl`, `node_modules/` **không** nằm trong `src/` vì �
 ### Cách A — Claude Cloud session (Cowork) — khuyến nghị
 1. Mở phiên mới, đính kèm `ChuThaiNguyen_LuanVan_v2.0_MaNguon.zip` vào khung chat (hoặc yêu cầu Claude tải từng file trong `src/` qua Google Drive connector).
 2. Dán prompt khởi động ở §5.
-3. Claude sẽ: `unzip` → `bash run_all.sh` → kiểm tra 9 JSON khớp `docs/SoT_v2_SoLieuChuan.md` → tiếp tục chỉnh.
+3. Claude sẽ: `unzip` → `bash src/run_all.sh` → kiểm tra 9 JSON khớp `docs/SoT_v2_SoLieuChuan.md` → tiếp tục chỉnh.
 
 ### Cách B — Google Colab
 ```python
@@ -62,35 +61,37 @@ from google.colab import drive; drive.mount('/content/drive')
 Lưu ý: `run_all.sh` ghi JSON/PNG/docx ngay trong `src/`. Nếu không muốn sinh file trong Drive, chép `src/` sang `/content/work` rồi chạy ở đó. Colab có thể khác phiên bản Python (3.12) — số từ mô hình học máy có thể lệch ở chữ số thập phân cuối; kết luận định tính không đổi.
 
 ### Cách C — Máy cá nhân
-Tải toàn bộ `src/` về một thư mục → `bash run_all.sh` (Python 3.11 + Node 18+). Môi trường gốc: Python 3.11.15, Node 22, `docx@9.7.1` (đã ghim).
+Tải toàn bộ `src/` về một thư mục → `bash src/run_all.sh` (Python 3.11 + Node 18+). Môi trường gốc: Python 3.11.15, Node 22, `docx@9.7.1` (đã ghim).
 
 ---
 
-## 4. Luồng script → JSON → chương
+## 4. Luồng script → JSON → chương (v3.0)
 
 | # | Script | Đầu ra | Dùng ở |
 |---|---|---|---|
-| 1 | `ch1_stats.py` | ch1_stats.json | Ch.1 (số ở Ch.1 đang gõ tay — đã đối chiếu) |
-| 2 | `bt1_pertask.py` | bt1_pertask.json | Ch.4 §4.1, Tóm tắt, Ch.5–6 |
-| 3 | `bt1_models.py` | bt1_models.json | Ch.4 §4.1.2–4.1.4 |
-| 4 | `metric_compare.py` | metric_compare.json | Phụ lục A.2, B.1 |
-| 5 | `bt3_form2.py` | bt3_form.json | Ch.4 §4.3.1 (FOC) |
-| 6 | `ch4_bt12.py` | ch4_bt12.json, bt2_model.json, bt2_scored.pkl, FIG_4_1…4_4 | Ch.4 §4.2, BT3 dùng pkl |
-| 7 | `ch4_bt3.py` | ch4_bt3.json, FIG_4_5…4_7 | Ch.4 §4.3–4.5, Ch.5–6 |
-| 8 | `ch5_triage.py` | ch5_triage.json | Ch.5 §5.3.3, Ch.6 §6.3 |
-| 9 | `ch4_icc_appx.py` | ch4_icc_appx.json | Phụ lục A.1, B.2 |
-| 10 | `figs_ch1_ch3.py` | FIG_1_1, FIG_1_2, FIG_3_1 | Ch.1, Ch.3 |
-| — | `node build_all.js` | ChuThaiNguyen_LuanVan_v2.0.docx | ch01–06 → back → **front chạy cuối** (để danh sách hình/bảng lấy đủ từ sổ đăng ký caption) |
+| 1 | `ch1_stats.py` | ch1_stats.json | Ch.1 (Bảng 1.1, 1.2 đọc JSON) |
+| 2 | `data_audit.py` | data_audit.json | §3.1.2, Bảng 3.1, B.3 |
+| 3 | `bt1_pertask.py` | bt1_pertask.json | §4.1 |
+| 4 | `bt1_models.py` | bt1_models.json | §4.1.2–4.1.4 |
+| 5 | `metric_compare.py` | metric_compare.json | Phụ lục A.2, B.1 |
+| 6 | `bt3_form2.py` | bt3_form.json | §4.3.1 |
+| 7 | `ch4_bt12.py` | ch4_bt12.json, bt2_model.json (có ma trận hiệp phương sai), bt2_scored.pkl, FIG_4_1…4_4 | §4.2, Bảng B.4–B.5 |
+| 8 | `ch4_bt3.py` | ch4_bt3.json, FIG_4_5…4_7 | §4.3, §4.6 |
+| 9 | `ch4_sim.py` | ch4_sim.json | §4.4 (≈15 phút) |
+| 10 | `ch4_sim_figs.py` | FIG_4_8, FIG_4_9, ch4_sim_extra.json | §4.4 |
+| 11 | `ch5_triage.py` | ch5_triage.json | §5.3.4, §6.3 |
+| 12 | `ch4_icc_appx.py` | ch4_icc_appx.json | Phụ lục A.1, B.2 |
+| 13 | `figs_ch1_ch3.py` | FIG_1_1, FIG_1_2, FIG_3_1 | Ch.1, Ch.3 |
+| — | `node build_all.js` | ChuThaiNguyen_LuanVan_v3.0.docx | ch01–06 (+ch04_44.js) → back → front |
+| — | `make_sot.py` | docs/SoT_v3_SoLieuChuan.md | tài liệu số liệu chuẩn |
 
-**Thứ tự bắt buộc:** 6 trước 7 (BT3 đọc `bt2_scored.pkl`). Caption phải đúng dạng `Hình x.y: …` / `Bảng x.y: …` để tự vào danh sách. Footnote dùng `fn("…")` trong mảng run.
-
----
+**Thứ tự bắt buộc:** 7 trước 8 trước 9 (BT3 và mô phỏng đọc `bt2_scored.pkl`, `bt2_model.json`, `ch4_bt3.json`).
 
 ## 5. Prompt khởi động cho phiên Cloud mới (dán nguyên văn)
 
 > Bạn là GVHD và đồng thời là agent thực hiện luận văn thạc sĩ ISE của tôi (Chu Thái Nguyên, HCMUT, GVHD TS. Nguyễn Vạng Phúc Nguyên). Luôn trả lời bằng tiếng Việt, giữ thuật ngữ tiếng Anh. Làm tuần tự từng chương, dừng cho tôi review.
 >
-> Đọc trước: `00_START_HERE.md`, `docs/SoT_v2_SoLieuChuan.md`, `docs/BanGiao_HuongMoi_SauReview.md`, `docs/ChiSoModel_va_CongThuc.md`. Dựng lại dự án bằng `bash run_all.sh` và xác nhận JSON khớp SoT_v2 trước khi sửa bất cứ gì.
+> Đọc trước: `00_START_HERE.md`, `docs/BanGiao_v3.0_DuLieuV3.md`, `docs/SoT_v3_SoLieuChuan.md`, `docs/ChiSoModel_va_CongThuc.md`. Dựng lại dự án bằng `bash src/run_all.sh` và xác nhận JSON khớp SoT_v3 trước khi sửa bất cứ gì.
 >
 > Năm nguyên tắc bắt buộc:
 > 1. **Không overclaim** — P(Win|p,x) là ước lượng thực nghiệm dạng rút gọn, không phải hậu nghiệm Bayes; best-response một phía không phải Nash; "nhất quán về chiều" không phải "đã chứng minh".
@@ -117,14 +118,13 @@ Tải toàn bộ `src/` về một thư mục → `bash run_all.sh` (Python 3.11
 
 ---
 
-## 7. Số liệu then chốt (chi tiết: `docs/SoT_v2_SoLieuChuan.md`)
+## 7. Số liệu then chốt v3.0 (chi tiết: `docs/SoT_v3_SoLieuChuan.md`)
 
-- **BT1:** OLS thang gốc + HC3 · CV Sales 0,760 · hiệp phương sai 47,4% · Sales–Pricing r = −0,037 · tách khâu cải thiện MAE chỉ 0,77% (giá trị là chẩn đoán, không phải dự báo)
-- **BT2:** logistic 13 biến Z / 6 nhóm · GroupShuffleSplit theo dự án · **AUC test 0,7770 [0,7528; 0,8020] · Brier 0,1820** · biến giá = Price_Competitiveness (= Target/Offered); Markup_Pct p = 0,749 · TAT_pred p = 0,089, dấu ngược kỳ vọng · XGBoost chỉ +0,005 AUC
-- **BT3:** E[π] = (p−c)·P(Win|p,x); FOC γ·T·(p−c)·(1−P) = p², phi tuyến · **CBPO +14,03%** · Nash A/B kẹp 86,5% / 100% · H1 độ dốc −0,0075 (SE cụm 0,0063) → bác bỏ −1, không bác bỏ 0 · giả dược −0,055 pp → bác bỏ H2
-- **A/B:** ICC lợi nhuận 0,1997 (DEFF 1,818), ICC thắng/thua 0,18 cho guard · uplift 14%: 311 RFQ/nhánh, 4,1 tháng · guard 3 pp: 18,7 tháng
-
----
+- **BT1:** không đổi — CV Sales 0,760 · hiệp phương sai 47,4% · r(Sales, Pricing) = −0,037 · hai đường tính chênh 0,77% (0,8437 vs 0,8372)
+- **BT2 (nhãn v3):** AUC test 0,7808 [0,7579; 0,8051] · β PC +0,838 · CompInt −0,133 · Queue −0,222 · TAT_pred −0,093 (p 0,0038) · **trên nhãn v1 ba hệ số sau không có ý nghĩa**
+- **BT3:** CBPO +13,91% (kẹp 36,4%) · Nash A/B kẹp 85% / 100% · **Nash C kẹp 32,4%, +10,45% (thuần +11,68%, lai +12,85%)** · H1 lịch sử b ≈ 0; FOC b = −0,37; Nash C b = −1,12 (đồng nhất thức) · giả dược tĩnh −0,18 / −0,23 pp
+- **Mô phỏng §4.4 (π_SLA = 1):** P4 − P3 = +1,91 pp (C1) / +6,56 pp (C2) · vi phạm 37,67% → 36,0% / 32,2% · giá trị đến từ phân luồng G2; G1 đổi dấu ở 15/30 ô
+- **A/B:** ICC 0,1995 (DEFF 1,818) · 2 nhánh: 316 hồ sơ/nhánh, 4,1 tháng · 3 nhánh: 382 hồ sơ/nhánh, 7,5 tháng; guard 5 pp 12,3 tháng
 
 ## 8. Việc còn lại
 

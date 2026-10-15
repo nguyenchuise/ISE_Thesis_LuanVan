@@ -42,8 +42,10 @@ plt.tight_layout(); plt.savefig("FIG_4_1_Stage_Variation.png"); plt.close()
 X=sm.add_constant(h[PRED].fillna(0).astype(float)); y=h["Turnaround time"].astype(float)
 m_raw=sm.OLS(y,X).fit(); m_log=sm.OLS(np.log(y.clip(lower=.1)),X).fit()
 fig,ax=plt.subplots(1,2,figsize=(11,4.2))
-for a,(m,t,c) in zip(ax,[(m_raw,"(A) Thang đo gốc — BP p = 0,609, phương sai đều",BLUE),
-                          (m_log,"(B) Sau log-transform — BP p < 0,001, phương sai THAY ĐỔI",RED)]):
+bp_raw=sm.stats.diagnostic.het_breuschpagan(m_raw.resid,X.values)[1]; bp_log=sm.stats.diagnostic.het_breuschpagan(m_log.resid,X.values)[1]
+fmt_p=lambda q:("< 0,001" if q<1e-3 else ("= "+f"{q:.3f}".replace(".",",")))
+for a,(m,t,c) in zip(ax,[(m_raw,f"(A) Thang đo gốc — BP p {fmt_p(bp_raw)}"+(", phương sai đều" if bp_raw>.05 else ""),BLUE),
+                          (m_log,f"(B) Sau log-transform — BP p {fmt_p(bp_log)}"+(", phương sai THAY ĐỔI" if bp_log<.05 else ""),RED)]):
     a.scatter(m.fittedvalues,m.resid,s=7,alpha=.35,color=c)
     a.axhline(0,color=INK,lw=1); a.set_xlabel("Giá trị dự báo"); a.set_ylabel("Phần dư"); a.set_title(t,fontsize=10)
 plt.tight_layout(); plt.savefig("FIG_4_2_Residuals.png"); plt.close()
@@ -74,8 +76,12 @@ for tr,te in kf.split(X):
 h["TAT_pred"]=oof
 OUT["bt1_oof"]={"MAE":float(np.mean(np.abs(y-oof))),"R2_oof":float(1-((y-oof)**2).sum()/((y-y.mean())**2).sum())}
 
+v1=pd.read_csv("ItemView_Workload_v1_NhanTruocDoiSoat.csv")       # nhan truoc doi soat (ban nhap v2.0) — chi dung cho do nhay
+assert (v1["Project key"].values==it["Project key"].values).all() and (v1["Material"].values==it["Material"].values).all()
+it["Item_Win_Status_v1"]=v1["Item_Win_Status_v1"].values
 d=it.merge(h[["Project key","Is_Strategic","Is_Existing_Customer","Competitor_Intensity",
-   "Payment_Term_Risk","Pricing_Queue_Depth","Assigned_Engineer_Experience","Customer_Class","TAT_pred"]],
+   "Payment_Term_Risk","Pricing_Queue_Depth","Assigned_Engineer_Experience","Customer_Class","TAT_pred",
+   "Effective_Competitors_N","Urgency_SLA_Sensitivity","Turnaround time"]],
    on="Project key",how="left")
 d["CompInt"]=d["Competitor_Intensity"].map({"Low":1,"Med":2,"High":3})
 d["PayRisk"]=d["Payment_Term_Risk"].map({"Net30":1,"Net60":2,"Net90":3})
@@ -86,7 +92,9 @@ FE=["Price_Competitiveness","Supplier_SQE_Score","ATP_Stock_Available","Has_PPAP
 GRP={"Giá":["Price_Competitiveness"],"Năng lực NCC":["Supplier_SQE_Score","ATP_Stock_Available","Has_PPAP_Cert","Local_Supplier"],
      "Quan hệ KH":["Is_Strategic","Is_Existing_Customer","CustClass"],"Cạnh tranh":["CompInt"],
      "Rủi ro TM":["PayRisk"],"Năng lực xử lý":["Pricing_Queue_Depth","Assigned_Engineer_Experience","TAT_pred"]}
-s=d[FE+["Item_Win_Status","Project key","Avg_PFEP","Offered_Price","Target_Price","Markup_Pct","Material_Cat","Order Quantity"]].dropna().reset_index(drop=True)
+EXTRA=["Avg_PFEP","Offered_Price","Target_Price","Markup_Pct","Material_Cat","Order Quantity",
+       "Market_Reserve_Bound","Effective_Competitors_N","Urgency_SLA_Sensitivity","Turnaround time","Item_Win_Status_v1"]
+s=d[FE+["Item_Win_Status","Project key"]+EXTRA].dropna().reset_index(drop=True)
 OUT["bt2_n"]={"items":int(len(s)),"projects":int(s["Project key"].nunique()),"win_rate":float(s.Item_Win_Status.mean())}
 Xl=sm.add_constant(s[FE].astype(float)); yl=s["Item_Win_Status"].astype(int); g=s["Project key"].astype(str)
 tr,te=next(GroupShuffleSplit(1,test_size=.2,random_state=RS).split(Xl,yl,g))
@@ -159,10 +167,23 @@ xg=XGBClassifier(n_estimators=300,learning_rate=.05,max_depth=4,subsample=.8,col
 xg.fit(s[FE].iloc[tr],yl.iloc[tr]); px=xg.predict_proba(s[FE].iloc[te])[:,1]
 OUT["bt2_xgb"]={"AUC_test":float(roc_auc_score(yt,px)),"Brier_test":float(brier_score_loss(yt,px))}
 
+# do nhay theo phien ban nhan: cung dac ta, cung phan chia, nhan truoc doi soat (v1)
+y1=s["Item_Win_Status_v1"].astype(int)
+m1=sm.Logit(y1.iloc[tr],Zc.iloc[tr]).fit(disp=0); p1=m1.predict(Zc.iloc[te])
+OUT["bt2_label_sens"]={"n_changed":int((y1!=yl).sum()),"n_1to0":int(((y1==1)&(yl==0)).sum()),"n_0to1":int(((y1==0)&(yl==1)).sum()),
+   "win_rate_v1":float(y1.mean()),"AUC_test_v1":float(roc_auc_score(y1.iloc[te],p1)),
+   "coef_v1":{f:{"beta_z":float(m1.params[f]),"p":float(m1.pvalues[f])} for f in FE}}
+# phan bo dong hang doi nhan theo do sau hang doi (ca 8.249 dong)
+band=pd.cut(d["Pricing_Queue_Depth"],[-1,5,10,15,20,30,1000],labels=["0–5","6–10","11–15","16–20","21–30",">30"])
+chg=pd.DataFrame({"band":band,"v1":d["Item_Win_Status_v1"],"v2":d["Item_Win_Status"]})
+OUT["bt2_label_by_queue"]=[{"band":str(b),"n":int(len(g)),"n_1to0":int(((g.v1==1)&(g.v2==0)).sum()),"n_0to1":int(((g.v1==0)&(g.v2==1)).sum())}
+   for b,g in chg.groupby("band",observed=False)]
+
 # luu mo hinh + tap test cho BT3
 s["p_hat"]=ml.predict(Zc); s["is_test"]=0; s.loc[te,"is_test"]=1
 s.to_pickle("bt2_scored.pkl")
-json.dump({"params":ml.params.to_dict(),"mu":mu_.to_dict(),"sd":sd_.to_dict(),"FE":FE},open("bt2_model.json","w"),indent=1)
+json.dump({"params":ml.params.to_dict(),"mu":mu_.to_dict(),"sd":sd_.to_dict(),"FE":FE,
+           "cov":ml.cov_params().values.tolist(),"cov_names":list(ml.cov_params().index)},open("bt2_model.json","w"),indent=1)
 json.dump(OUT,open("ch4_bt12.json","w"),indent=2)
 
 print("\nBT1 OOF: MAE %.4f R2 %.4f" % (OUT["bt1_oof"]["MAE"],OUT["bt1_oof"]["R2_oof"]))
