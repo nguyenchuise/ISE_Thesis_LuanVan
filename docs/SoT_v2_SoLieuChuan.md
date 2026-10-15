@@ -1,3 +1,5 @@
+> **LỖI THỜI từ 15-10-2026** — đã thay bằng `SoT_v3_SoLieuChuan.md` (bộ dữ liệu v3). Giữ để tra lịch sử.
+
 # NGUỒN SỐ LIỆU CHUẨN v2.0 — LUẬN VĂN LÀM LẠI THEO ĐỊNH HƯỚNG GVHD
 *Chốt 17-09-2026. Thay thế `LEGACY_SoT_SoLieuChuan_v1_XGB.md` cho Chương 4–6. Mọi số đọc trực tiếp từ JSON: bt1_pertask.json, bt1_models.json, ch4_bt12.json, ch4_bt3.json, bt3_form.json.*
 

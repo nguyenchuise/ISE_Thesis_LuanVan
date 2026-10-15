@@ -1,6 +1,13 @@
 // CHUONG 1 — GIOI THIEU  (Run 1)
 module.exports=function(L){
 const {C,run,p,h1,h2,h3,cap,center,mkTable,fn,img}=L;
+const fs=require("fs"); const J=f=>JSON.parse(fs.readFileSync(f,"utf8"));
+const S=J("ch1_stats.json"), DA=J("data_audit.json");
+const f=(x,d=2)=>Number(x).toFixed(d).replace(".",",").replace(/^-/,"−");
+const pct=(x,d=2)=>f(x*100,d)+"%";
+const n0=(x)=>Number(x).toLocaleString("de-DE");
+const Q=S.quy_mo, SL=S.sla, PC=S.phan_ung_canh_tranh, MK=S.markup, TS=S.tan_suat;
+const gapW=(PC.Low.win-PC.High.win)*100, gapM=S.bien_do_markup_giua_3_muc*100;
 const k=[];
 
 /* ═══════════ CHƯƠNG 1 ═══════════ */
@@ -15,38 +22,40 @@ k.push(h2("1.2. Ý nghĩa và tính cấp thiết của bài toán nghiên cứu
 k.push(p("Mục này trả lời câu hỏi nền tảng: vì sao bài toán báo giá B2B xứng đáng là đối tượng của một nghiên cứu khoa học, thay vì chỉ là một công việc tác nghiệp thường nhật. Bốn luận cứ dưới đây đều được kiểm chứng trực tiếp trên dữ liệu vận hành của doanh nghiệp trong kỳ quan sát 299 ngày."));
 
 k.push(h3("1.2.1. Đây là quyết định lặp lại với tần suất cao"));
-k.push(p([run("Quyết định định giá trong phân phối công nghiệp không phải quyết định chiến lược hiếm gặp mà là quyết định tác nghiệp tần suất cao. Trong kỳ quan sát, doanh nghiệp xử lý 1.500 hồ sơ RFQ chứa 8.249 dòng hàng cho 220 khách hàng — trung bình 152,5 hồ sơ mỗi tháng và gần 39 quyết định giá mỗi ngày làm việc",{}),fn("Tính theo 299 ngày lịch quy đổi 5/7 thành khoảng 214 ngày làm việc; 8.249 / 214 ≈ 38,6."),run(".",{})]));
+k.push(p([run(`Quyết định định giá trong phân phối công nghiệp không phải quyết định chiến lược hiếm gặp mà là quyết định tác nghiệp tần suất cao. Trong kỳ quan sát, doanh nghiệp xử lý ${n0(Q.du_an)} hồ sơ RFQ chứa ${n0(Q.mat_hang)} dòng hàng cho ${Q.khach_hang} khách hàng — trung bình ${f(Q.du_an_moi_thang,1)} hồ sơ mỗi tháng và gần ${Math.round(TS.quyet_dinh_gia_moi_ngay_lam_viec)} quyết định giá mỗi ngày làm việc`,{}),fn(`Tính theo ${Q.ky_quan_sat_ngay} ngày lịch quy đổi 5/7 thành khoảng ${Math.round(Q.ky_quan_sat_ngay*5/7)} ngày làm việc; ${n0(Q.mat_hang)} / ${Math.round(Q.ky_quan_sat_ngay*5/7)} ≈ ${f(TS.quyet_dinh_gia_moi_ngay_lam_viec,1)}.`),run(".",{})]));
 k.push(mkTable(
   ["Chỉ tiêu","Giá trị","Ý nghĩa"],
   [
-    ["Số hồ sơ RFQ trong kỳ","1.500","Đơn vị công việc và đơn vị cơ hội kinh doanh"],
-    ["Số dòng hàng cần định giá","8.249","Mỗi dòng là một quyết định giá độc lập"],
-    ["Số mặt hàng trung bình mỗi hồ sơ","5,50","Một hồ sơ là một giỏ hàng, không phải một sản phẩm"],
-    ["Nhịp độ tiếp nhận","152,5 hồ sơ / tháng","Tải công việc ổn định, có thể dự báo"],
-    ["Tần suất quyết định giá","38,6 quyết định / ngày làm việc","Vượt xa khả năng cân nhắc kỹ lưỡng thủ công"],
-    ["Biên lợi nhuận trung bình mỗi mặt hàng","34,92 USD","Giá trị mỗi quyết định nhỏ, nhưng tổng tích lũy lớn"],
+    ["Số hồ sơ RFQ trong kỳ",n0(Q.du_an),"Đơn vị công việc và đơn vị cơ hội kinh doanh"],
+    ["Số dòng hàng cần định giá",n0(Q.mat_hang),"Mỗi dòng là một quyết định giá độc lập"],
+    ["Số khách hàng",String(Q.khach_hang),"Danh mục khách hàng đủ rộng để quan hệ phi giá có vai trò"],
+    ["Số mặt hàng trung bình mỗi hồ sơ",f(Q.mat_hang_tb_moi_du_an,2),"Một hồ sơ là một giỏ hàng, không phải một sản phẩm"],
+    ["Nhịp độ tiếp nhận",`${f(Q.du_an_moi_thang,1)} hồ sơ / tháng`,"Tải công việc ổn định, có thể dự báo"],
+    ["Tần suất quyết định giá",`${f(TS.quyet_dinh_gia_moi_ngay_lam_viec,1)} quyết định / ngày làm việc`,"Vượt xa khả năng cân nhắc kỹ lưỡng thủ công"],
+    ["Biên lợi nhuận trung bình mỗi mặt hàng",`${f(S.gia_tri.bien_lo_i_nhuan_tb_moi_mat_hang_USD,2)} USD`,"Giá trị mỗi quyết định nhỏ, nhưng tổng tích lũy lớn"],
+    ["Tỷ lệ thắng cấp dòng hàng",pct(S.gia_tri.ty_le_thang_mat_hang,2),"Đã đối soát trạng thái đơn hàng cuối kỳ (bản dữ liệu v3)"],
   ],[3100,2200,3700]));
 k.push(cap("Bảng 1.1: Quy mô và nhịp độ của quyết định định giá trong kỳ quan sát"));
-k.push(p("Cấu trúc này — tần suất cao, giá trị mỗi quyết định nhỏ, tổng tích lũy lớn — chính là dạng bài toán mà hệ thống hỗ trợ ra quyết định dựa trên dữ liệu tạo ra giá trị lớn nhất. Một cải thiện nhỏ trên mỗi quyết định, nhân với 8.249 quyết định trong kỳ 299 ngày — tương đương khoảng 10.000 quyết định mỗi năm — trở thành khác biệt đáng kể ở cấp doanh nghiệp. Ngược lại, chính tần suất này khiến việc cân nhắc thủ công từng trường hợp là bất khả thi trên thực tế."));
+k.push(p(`Cấu trúc này — tần suất cao, giá trị mỗi quyết định nhỏ, tổng tích lũy lớn — chính là dạng bài toán mà hệ thống hỗ trợ ra quyết định dựa trên dữ liệu tạo ra giá trị lớn nhất. Một cải thiện nhỏ trên mỗi quyết định, nhân với ${n0(Q.mat_hang)} quyết định trong kỳ ${Q.ky_quan_sat_ngay} ngày — tương đương khoảng ${n0(Math.round(Q.mat_hang/Q.ky_quan_sat_ngay*365/100)*100)} quyết định mỗi năm — trở thành khác biệt đáng kể ở cấp doanh nghiệp. Ngược lại, chính tần suất này khiến việc cân nhắc thủ công từng trường hợp là bất khả thi trên thực tế.`));
 
 k.push(h3("1.2.2. Quyết định giá hiện hành gần như không phản ứng với cường độ cạnh tranh"));
 k.push(p("Đây là bất thường có giá trị nghiên cứu rõ rệt nhất trong dữ liệu. Nếu chính sách giá của doanh nghiệp có tính đến bối cảnh cạnh tranh, hệ số markup phải thấp hơn ở những cơ hội nhiều đối thủ và cao hơn ở những cơ hội ít đối thủ. Dữ liệu cho thấy điều ngược lại: hệ số markup gần như bất động trong khi kết quả thắng thua biến thiên rất mạnh."));
 k.push(mkTable(
   ["Cường độ cạnh tranh","Số mặt hàng","Hệ số markup trung bình","Tỷ lệ thắng"],
   [
-    ["Thấp (Low)","2.123","1,2705","73,20%"],
-    ["Trung bình (Med)","4.029","1,2690","64,61%"],
-    ["Cao (High)","2.097","1,2671","54,27%"],
-    ["Biên độ chênh lệch","—","0,35 điểm phần trăm","18,93 điểm phần trăm"],
+    ["Thấp (Low)",n0(PC.Low.n),f(PC.Low.markup,4),pct(PC.Low.win)],
+    ["Trung bình (Med)",n0(PC.Med.n),f(PC.Med.markup,4),pct(PC.Med.win)],
+    ["Cao (High)",n0(PC.High.n),f(PC.High.markup,4),pct(PC.High.win)],
+    ["Biên độ chênh lệch","—",`${f(gapM,2)} điểm phần trăm`,`${f(gapW,2)} điểm phần trăm`],
   ],[2400,1700,2600,2300],[3]));
 k.push(cap("Bảng 1.2: Hệ số markup gần như bất động trong khi tỷ lệ thắng biến thiên mạnh theo cạnh tranh"));
-k.push(p("Đọc dòng cuối của bảng: khi chuyển từ nhóm cạnh tranh thấp sang nhóm cạnh tranh cao, tỷ lệ thắng giảm 18,93 điểm phần trăm, trong khi hệ số markup chỉ thay đổi 0,35 điểm phần trăm. Nói cách khác, biến động của kết quả lớn gấp khoảng năm mươi lần biến động của biến quyết định. Toàn bộ hệ số markup của doanh nghiệp nằm trong một dải rất hẹp, với hệ số biến thiên chỉ 5,64% quanh giá trị trung bình 1,2689."));
+k.push(p(`Đọc dòng cuối của bảng: khi chuyển từ nhóm cạnh tranh thấp sang nhóm cạnh tranh cao, tỷ lệ thắng giảm ${f(gapW,2)} điểm phần trăm, trong khi hệ số markup chỉ thay đổi ${f(gapM,2)} điểm phần trăm. Nói cách khác, biến động của kết quả lớn gấp khoảng ${Math.round(gapW/gapM/10)*10} lần biến động của biến quyết định. Toàn bộ hệ số markup của doanh nghiệp nằm trong một dải rất hẹp, với hệ số biến thiên chỉ ${f(MK.cv*100,2)}% quanh giá trị trung bình ${f(MK.mean,4)}. Số liệu trên dùng bản dữ liệu đã đối soát trạng thái đơn hàng cuối kỳ; trên bản nháp trước đối soát, chênh lệch tỷ lệ thắng là 18,93 điểm phần trăm — kết luận định tính không đổi.`));
 k.push(p("Hiện tượng này dẫn tới hai khả năng, và cả hai đều đáng được nghiên cứu. Khả năng thứ nhất là doanh nghiệp đang bỏ lại biên lợi nhuận trên bàn ở những cơ hội ít cạnh tranh, nơi khách hàng sẵn sàng chấp nhận mức giá cao hơn. Khả năng thứ hai là doanh nghiệp đang mất những cơ hội có thể thắng ở nhóm cạnh tranh cao, nơi một mức giảm giá nhỏ đủ để đảo chiều kết quả. Việc phân định hai khả năng này bằng dữ liệu là một trong những mục tiêu của luận văn."));
 
 k.push(img("FIG_1_2_Markup_vs_WinRate.png",520,0.4752));
 k.push(cap("Hình 1.1: Tỷ lệ thắng giảm mạnh theo cạnh tranh trong khi hệ số markup gần như bất động"));
 k.push(h3("1.2.3. Cam kết thời gian phản hồi đang bị vi phạm ở mức đáng kể"));
-k.push(p("Song song với bài toán giá là bài toán thời gian. Doanh nghiệp cam kết phản hồi trong bảy ngày làm việc, nhưng 565 trên 1.500 hồ sơ — tương đương 37,67% — vượt ngưỡng này. Thời gian xử lý trung vị là 6,20 ngày, tức chỉ còn biên an toàn 0,80 ngày so với cam kết; phân vị 90 đạt 9,89 ngày, vượt cam kết gần ba ngày."));
+k.push(p(`Song song với bài toán giá là bài toán thời gian. Doanh nghiệp cam kết phản hồi trong bảy ngày làm việc, nhưng ${SL.so_vi_pham} trên ${n0(Q.du_an)} hồ sơ — tương đương ${pct(SL.ty_le_vi_pham)} — vượt ngưỡng này. Thời gian xử lý trung vị là ${f(SL.TAT_median,2)} ngày, tức chỉ còn biên an toàn ${f(7-SL.TAT_median,2)} ngày so với cam kết; phân vị 90 đạt ${f(SL.TAT_p90,2)} ngày, vượt cam kết gần ba ngày.`));
 k.push(p("Phân rã thời gian xử lý theo bốn khâu cho thấy nút thắt nằm ở khâu Pricing với trung vị 2,1 ngày, cao hơn WBS (1,7 ngày), Supply Chain (1,2 ngày) và Sales (0,8 ngày); theo giá trị trung bình, thứ tự này không đổi (2,39 / 1,79 / 1,28 / 0,96 ngày). Đáng chú ý, đây cũng chính là khâu thực hiện quyết định định giá. Nghĩa là nguồn lực khan hiếm về thời gian và nguồn lực ra quyết định về giá là cùng một nguồn lực."));
 
 k.push(img("FIG_1_1_TAT_SLA_Bottleneck.png",620,0.3657));
@@ -88,9 +97,9 @@ k.push(mkTable(
 k.push(cap("Bảng 1.4: Ba bài toán nghiên cứu và quan hệ phụ thuộc giữa chúng"));
 k.push(p("Riêng với bài toán thứ ba, luận văn phát biểu hai giả thuyết kiểm định được, nhằm chuyển việc đánh giá khung định giá mở rộng từ so sánh mô tả sang kiểm định thống kê chính thức. Phạm vi của hai giả thuyết này giới hạn trong BT3 và không áp dụng cho BT1 hay BT2."));
 k.push(p([run("Giả thuyết H1 — giả thuyết giá cân bằng. ",{bold:true}),
-  run("Chính sách giá xây dựng trên nghiệm cân bằng Bayesian Nash dạng đóng tạo ra lợi nhuận kỳ vọng cao hơn có ý nghĩa so với chính sách best-response một phía. Hệ quả so sánh tĩnh có thể kiểm định: hệ số markup tỷ lệ nghịch với số đối thủ hiệu dụng, tức độ co giãn của logarit markup theo logarit số đối thủ xấp xỉ âm một.",{})]));
+  run("Chính sách giá xây dựng trên nghiệm cân bằng Bayesian Nash dạng đóng tạo ra lợi nhuận kỳ vọng cao hơn có ý nghĩa so với chính sách best-response một phía. Hệ quả so sánh tĩnh có thể kiểm định: biên giá tỷ lệ nghịch với số đối thủ, tức độ co giãn của logarit biên giá theo logarit số đối thủ xấp xỉ âm một. Hệ quả này được kiểm định theo hai mặt: trên hành vi định giá lịch sử của doanh nghiệp, và trên mức giá do mô hình tối ưu sinh ra.",{})]));
 k.push(p([run("Giả thuyết H2 — giả thuyết giá bóng của năng lực. ",{bold:true}),
-  run("Việc đưa giá bóng (shadow price) của năng lực xử lý vào giá chào cải thiện đồng thời lợi nhuận và mức tuân thủ cam kết thời gian. Hệ quả có thể kiểm định: thành phần điều tiết theo độ sâu hàng đợi đóng góp một phần dương và phân biệt được với một chính sách nâng giá đồng loạt có cùng tác động trung bình.",{})]));
+  run("Việc đưa giá bóng (shadow price) của năng lực xử lý vào giá chào cải thiện đồng thời lợi nhuận và mức tuân thủ cam kết thời gian. Hệ quả có thể kiểm định: thành phần điều tiết theo độ sâu hàng đợi đóng góp một phần dương và phân biệt được với một chính sách nâng giá đồng loạt có cùng tác động trung bình. Vì đánh giá tĩnh một kỳ không có vòng phản hồi từ quyết định hôm nay sang hàng đợi ngày mai, H2 được kiểm định thêm trong một nghiên cứu mô phỏng liên kỳ có kiểm soát (Mục 4.4), nơi giá bóng được dùng đồng thời làm tín hiệu giá và làm tiêu chí phân luồng tại pha Sales-WBS.",{})]));
 
 k.push(h2("1.6. Phạm vi, giả định và giới hạn khai báo trước"));
 k.push(p("Ba giới hạn sau được khai báo ngay từ đầu vì chúng chi phối phạm vi hiệu lực của mọi kết luận trong luận văn."));
@@ -100,10 +109,12 @@ k.push(p([run("Thứ hai, cạnh tranh không thuần giá. ",{bold:true}),
   run("Quyết định mua của khách hàng chịu ảnh hưởng của các yếu tố phi giá như điểm chất lượng nhà cung cấp, tình trạng tồn kho cam kết giao, chứng nhận phê duyệt mặt hàng và quan hệ khách hàng hiện hữu. Luận văn mô hình hóa các yếu tố này như biến điều kiện, không mô hình hóa hàm điểm của khách hàng.",{})]));
 k.push(p([run("Thứ ba, dữ liệu đã qua xử lý bảo mật. ",{bold:true}),
   run("Bộ dữ liệu đã trải qua bước chuẩn hóa và ẩn danh hóa theo yêu cầu bảo mật của doanh nghiệp. Do đó các kết luận định tính — thứ tự các khâu, dấu của hệ số, cấu trúc biến động — bền vững hơn từng con số tuyệt đối cụ thể. Mọi phát biểu định lượng trong luận văn được hiểu trong phạm vi bộ dữ liệu này.",{})]));
-k.push(p("Về phạm vi không gian và thời gian, nghiên cứu dựa trên một doanh nghiệp, một thị trường, kỳ quan sát 299 ngày. Việc khái quát hóa sang doanh nghiệp khác cần được kiểm tra lại bằng chính bộ tiêu chí chẩn đoán mà luận văn đề xuất."));
+k.push(p([run("Thứ tư, phiên bản dữ liệu. ",{bold:true}),
+  run(`Luận văn sử dụng bản trích xuất lại từ ERP (bản v3), bổ sung ba trường liên kết từ phân hệ CRM/Sourcing — số đối thủ thực tế, độ nhạy cam kết thời gian, và cận trên giá dự trữ cấp dòng hàng — cùng trạng thái thắng/thua đã đối soát cuối kỳ. So với bản nháp trước, ${DA.labels.n_changed} trên ${n0(Q.mat_hang)} nhãn thắng/thua (${f(DA.labels.pct_changed,2)}%) được điều chỉnh. Mục 3.1.2 mô tả chi tiết các thay đổi; mọi kết luận nhạy cảm với phiên bản nhãn được báo cáo kèm phân tích độ nhạy ở Mục 4.2.5.`,{})]));
+k.push(p("Về phạm vi không gian và thời gian, nghiên cứu dựa trên một doanh nghiệp, một thị trường, kỳ quan sát 299 ngày. Phần mô phỏng ở Mục 4.4 là mô phỏng phản thực dựa trên mô hình, không phải dữ liệu quan sát. Việc khái quát hóa sang doanh nghiệp khác cần được kiểm tra lại bằng chính bộ tiêu chí chẩn đoán mà luận văn đề xuất."));
 
 k.push(h2("1.7. Đóng góp kỳ vọng"));
-k.push(p("Luận văn hướng tới bốn đóng góp, sắp theo mức độ chắc chắn giảm dần."));
+k.push(p("Luận văn hướng tới năm đóng góp, sắp theo mức độ chắc chắn giảm dần."));
 k.push(p([run("Đóng góp 1 — Phân rã biến động thời gian xử lý theo khâu. ",{bold:true}),
   run("Chuyển từ dự báo thời gian tổng sang phân tích cấu trúc biến động giữa bốn khâu, cho phép xác định khâu nào bất ổn định nhất và mức độ đồng biến động giữa các khâu. Đây là thông tin cần thiết để thiết kế can thiệp vận hành, và chưa tồn tại trong nền tảng đã có.",{})]));
 k.push(p([run("Đóng góp 2 — Đặc tả tường minh và hiệu chuẩn mô hình xác suất thắng. ",{bold:true}),
@@ -111,10 +122,12 @@ k.push(p([run("Đóng góp 2 — Đặc tả tường minh và hiệu chuẩn m�
 k.push(p([run("Đóng góp 3 — Khung định giá theo xác suất thắng có kiểm chứng. ",{bold:true}),
   run("Xây dựng và đánh giá khung tối ưu giá trên cơ sở xác suất thắng đã hiệu chuẩn, kèm phân tích độ nhạy đầy đủ và khai báo tường minh phạm vi ngoại suy.",{})]));
 k.push(p([run("Đóng góp 4 — Kiểm định ranh giới áp dụng của mô hình cân bằng. ",{bold:true}),
-  run("Kiểm định hai giả thuyết mở rộng bằng phương pháp thống kê chính thức và kiểm chứng giả dược, qua đó xác định điều kiện mà dưới đó các mô hình lý thuyết đấu giá áp dụng được hoặc không áp dụng được trong bối cảnh phân phối công nghiệp.",{})]));
+  run("Kiểm định hai giả thuyết mở rộng bằng phương pháp thống kê chính thức và kiểm chứng giả dược, qua đó xác định điều kiện mà dưới đó các mô hình lý thuyết đấu giá áp dụng được hoặc không áp dụng được trong bối cảnh phân phối công nghiệp — gồm việc đối sánh ba đặc tả miền chi phí A, B và C.",{})]));
+k.push(p([run("Đóng góp 5 — Mô phỏng điều phối liên kỳ và mặt phẳng chuyển pha. ",{bold:true}),
+  run("Xây dựng mô hình mô phỏng hàng đợi và định giá neo vào 1.500 hồ sơ thực, so sánh bốn cơ chế vận hành có nhánh giả dược, và xác định vùng tham số — độ nhạy thời gian của khách hàng và chi phí vi phạm cam kết — trong đó phân luồng theo giá bóng tại pha Sales-WBS tạo ra giá trị vượt nhánh nâng giá đồng loạt.",{})]));
 
 k.push(h2("1.8. Cấu trúc luận văn"));
-k.push(p("Chương 2 tổng quan tài liệu theo hai nhánh: nền tảng thống kê và học máy cho bài toán dự báo, và nền tảng lý thuyết định giá đấu thầu cạnh tranh; đồng thời định vị khoảng trống nghiên cứu. Chương 3 trình bày phương pháp, gồm quy trình khai phá dữ liệu, đặc tả toán học của ba mô hình, quy tắc chẩn đoán giả định và bộ chỉ số đánh giá. Chương 4 trình bày kết quả thực nghiệm cho cả ba bài toán. Chương 5 thảo luận nguyên nhân của các kết quả và các hạn chế. Chương 6 kết luận, rút ra khung ứng dụng và khuyến nghị vận hành."));
+k.push(p("Chương 2 tổng quan tài liệu theo hai nhánh: nền tảng thống kê và học máy cho bài toán dự báo, và nền tảng lý thuyết định giá đấu thầu cạnh tranh; đồng thời định vị khoảng trống nghiên cứu. Chương 3 trình bày phương pháp, gồm quy trình khai phá dữ liệu, đặc tả toán học của ba mô hình, quy tắc chẩn đoán giả định và bộ chỉ số đánh giá. Chương 4 trình bày kết quả thực nghiệm cho cả ba bài toán, nghiên cứu mô phỏng có kiểm soát (Mục 4.4), tổng hợp và tham số thiết kế thực nghiệm. Chương 5 thảo luận nguyên nhân của các kết quả và các hạn chế. Chương 6 kết luận, rút ra khung ứng dụng và khuyến nghị vận hành."));
 
 return k;
 };

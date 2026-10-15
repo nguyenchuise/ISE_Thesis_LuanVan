@@ -1,10 +1,13 @@
 // CHUONG 3 — PHUONG PHAP NGHIEN CUU  (Run 3)
 module.exports=function(L){
 const {C,run,p,h1,h2,h3,cap,fx,mkTable,fn,img}=L;
+const fs=require("fs"); const J=f=>JSON.parse(fs.readFileSync(f,"utf8"));
+const DA=J("data_audit.json"), B12=J("ch4_bt12.json");
+const f=(x,d=2)=>Number(x).toFixed(d).replace(".",",").replace(/^-/,"−");
 const k=[];
 
 k.push(h1("CHƯƠNG 3. PHƯƠNG PHÁP NGHIÊN CỨU"));
-k.push(p("Chương này trình bày phương pháp cho ba bài toán đã phát biểu ở mục 1.5. Mục 3.1 mô tả dữ liệu và quy trình chuẩn bị chung. Ba mục tiếp theo trình bày đặc tả toán học và quy trình phân tích của từng bài toán, theo đúng thứ tự phụ thuộc: đầu ra của BT1 là đầu vào của BT2, và đầu ra của BT2 là đầu vào của BT3. Mục 3.5 chốt bộ chỉ số đánh giá áp dụng thống nhất cho toàn luận văn; mục 3.6 trình bày thiết kế thực nghiệm kiểm chứng."));
+k.push(p("Chương này trình bày phương pháp cho ba bài toán đã phát biểu ở mục 1.5. Mục 3.1 mô tả dữ liệu và quy trình chuẩn bị chung. Ba mục tiếp theo trình bày đặc tả toán học và quy trình phân tích của từng bài toán, theo đúng thứ tự phụ thuộc: đầu ra của BT1 là đầu vào của BT2, và đầu ra của BT2 là đầu vào của BT3. Mục 3.4 kết thúc bằng thiết kế nghiên cứu mô phỏng liên kỳ (Mục 3.4.6), phần phương pháp cho Mục 4.4. Mục 3.5 chốt bộ chỉ số đánh giá áp dụng thống nhất cho toàn luận văn; mục 3.6 trình bày thiết kế thực nghiệm kiểm chứng."));
 
 k.push(img("FIG_3_1_Methodology.png",640,0.5097));
 k.push(cap("Hình 3.1: Khung phương pháp — trục khai phá dữ liệu theo CRISP-DM cho BT1 và BT2, trục tối ưu giá và kiểm định giả thuyết cho BT3"));
@@ -12,19 +15,24 @@ k.push(cap("Hình 3.1: Khung phương pháp — trục khai phá dữ liệu the
 k.push(h2("3.1. Dữ liệu và quy trình chuẩn bị"));
 
 k.push(h3("3.1.1. Nguồn dữ liệu và cấu trúc hai cấp"));
-k.push(p("Dữ liệu trích xuất từ hệ thống hoạch định nguồn lực doanh nghiệp (ERP) của đơn vị nghiên cứu, gồm hai bảng ở hai cấp phân tích khác nhau và liên kết với nhau qua khóa dự án."));
+k.push(p("Dữ liệu trích xuất từ hệ thống hoạch định nguồn lực doanh nghiệp (ERP) của đơn vị nghiên cứu, gồm hai bảng ở hai cấp phân tích khác nhau và liên kết với nhau qua khóa dự án. Luận văn sử dụng bản trích xuất lại (bản v3), trong đó mỗi bảng được bổ sung các trường liên kết từ phân hệ quản trị quan hệ khách hàng (CRM) và phân hệ tìm nguồn (Sourcing), cùng trạng thái đơn hàng đã đối soát cuối kỳ."));
 k.push(mkTable(
-  ["Bảng","Cấp phân tích","Quy mô","Nhóm biến chính"],
+  ["Bảng","Cấp phân tích","Quy mô","Nhóm biến chính","Trường bổ sung ở bản v3"],
   [
-    ["HeadView","Hồ sơ RFQ (dự án)","1.500 bản ghi × 29 trường","Thời gian xử lý từng khâu và thời gian tổng; đặc điểm khách hàng; cường độ cạnh tranh; độ sâu hàng đợi; kinh nghiệm kỹ sư phụ trách"],
-    ["ItemView","Dòng hàng trong hồ sơ","8.249 bản ghi × 22 trường","Giá vốn, hệ số markup, giá chào, giá mục tiêu; thuộc tính nhà cung cấp; kết quả thắng/thua từng dòng"],
-  ],[1500,2100,2200,3200]));
-k.push(cap("Bảng 3.1: Cấu trúc hai cấp của bộ dữ liệu nghiên cứu"));
+    ["HeadView","Hồ sơ RFQ (dự án)",`${DA.shape.head[0].toLocaleString("de-DE")} bản ghi × ${DA.shape.head[1]} trường`,"Thời gian xử lý từng khâu và thời gian tổng; đặc điểm khách hàng; cường độ cạnh tranh; độ sâu hàng đợi; kinh nghiệm kỹ sư phụ trách","Effective_Competitors_N — số đối thủ thực tế tham gia cơ hội (CRM)\nUrgency_SLA_Sensitivity — hệ số nhạy cảm cam kết thời gian (CRM)"],
+    ["ItemView","Dòng hàng trong hồ sơ",`${DA.shape.item[0].toLocaleString("de-DE")} bản ghi × ${DA.shape.item[1]} trường`,"Giá vốn, hệ số markup, giá chào, giá mục tiêu; thuộc tính nhà cung cấp; kết quả thắng/thua từng dòng","Market_Reserve_Bound — cận trên giá dự trữ cấp dòng hàng (Sourcing)\nItem_Win_Status — trạng thái thắng/thua đã đối soát cuối kỳ"],
+  ],[1150,1450,1600,2500,2300]));
+k.push(cap("Bảng 3.1: Cấu trúc hai cấp của bộ dữ liệu nghiên cứu (bản v3) và các trường bổ sung"));
 k.push(p("Cấu trúc hai cấp này quyết định cách phân chia dữ liệu và cách chọn đơn vị phân tích cho từng bài toán. BT1 làm việc ở cấp hồ sơ vì thời gian xử lý là thuộc tính của cả hồ sơ, không của từng dòng hàng. BT2 và BT3 làm việc ở cấp dòng hàng vì kết quả thắng thua và quyết định giá được ghi nhận cho từng mặt hàng. Trung bình mỗi hồ sơ chứa 5,50 dòng hàng, nghĩa là các quan sát ở cấp dòng hàng không độc lập với nhau — chúng phân cụm theo hồ sơ."));
 
 k.push(h3("3.1.2. Làm sạch dữ liệu và xử lý giá trị khuyết"));
 k.push(p("Bộ dữ liệu thô gồm 11.694 bản ghi dòng hàng, sau khi loại các bản ghi trùng lặp, bản ghi thiếu khóa liên kết và bản ghi có trạng thái mua hàng không xác định còn 8.249 bản ghi hợp lệ. Về giá trị khuyết, hai trường có tỷ lệ khuyết đáng kể là điểm chất lượng nhà cung cấp (412 bản ghi, 5,0%) và chỉ số cạnh tranh về giá (329 bản ghi, 4,0%); các trường còn lại đầy đủ."));
-k.push(p([run("Luận văn xử lý giá trị khuyết bằng cách loại bỏ theo danh sách đầy đủ",{}),fn("Loại bỏ theo danh sách đầy đủ (listwise deletion) được chọn thay cho gán khuyết vì tỷ lệ khuyết dưới 5% và hai trường khuyết đều là biến độc lập; gán khuyết bằng mô hình sẽ đưa thêm một tầng bất định vào chính biến giá — biến quan trọng nhất của BT2."),run(" cho mô hình BT2, giữ lại 7.519 dòng hàng thuộc 1.475 hồ sơ. Lựa chọn này được kiểm tra về tính không chọn lọc: tỷ lệ thắng trên tập sau khi loại là 64,46%, so với 64,19% trên toàn bộ dữ liệu — chênh lệch 0,27 điểm phần trăm cho thấy việc khuyết dữ liệu không tương quan hệ thống với biến kết quả.",{})]));
+k.push(p([run("Luận văn xử lý giá trị khuyết bằng cách loại bỏ theo danh sách đầy đủ",{}),fn("Loại bỏ theo danh sách đầy đủ (listwise deletion) được chọn thay cho gán khuyết vì tỷ lệ khuyết dưới 5% và hai trường khuyết đều là biến độc lập; gán khuyết bằng mô hình sẽ đưa thêm một tầng bất định vào chính biến giá — biến quan trọng nhất của BT2."),run(` cho mô hình BT2, giữ lại ${B12.bt2_n.items.toLocaleString("de-DE")} dòng hàng thuộc ${B12.bt2_n.projects.toLocaleString("de-DE")} hồ sơ. Lựa chọn này được kiểm tra về tính không chọn lọc: tỷ lệ thắng trên tập sau khi loại là ${f(B12.bt2_n.win_rate*100,2)}%, so với ${f(DA.labels.win_rate_v3*100,2)}% trên toàn bộ dữ liệu — chênh lệch ${f(Math.abs(B12.bt2_n.win_rate-DA.labels.win_rate_v3)*100,2)} điểm phần trăm cho thấy việc khuyết dữ liệu không tương quan hệ thống với biến kết quả. Ba trường bổ sung của bản v3 không có giá trị khuyết.`,{})]));
+k.push(p([run("Khai báo về phiên bản dữ liệu và kiểm toán trường bổ sung. ",{bold:true,color:C.DRED}),
+  run(`Trước khi sử dụng, ba trường bổ sung được kiểm toán đối chiếu với các trường sẵn có, và kết quả cần được khai báo vì nó quyết định cách diễn giải các mô hình dùng chúng. Thứ nhất, Effective_Competitors_N là ánh xạ một-một từ Competitor_Intensity ở tầng thấp và trung bình (Low → 2, Med → 3) và tách tầng cao thành hai giá trị (4 hoặc 5); do đó nó chứa thông tin mới chủ yếu ở tầng cạnh tranh cao. Thứ hai, Urgency_SLA_Sensitivity nhận bốn giá trị và trùng khớp ${f(DA.Urgency.rule_match_frac*100,0)}% với quy tắc ${DA.Urgency.rule} — tức là một trường dẫn xuất từ hai trường đã có, không mang thông tin độc lập. Thứ ba, Market_Reserve_Bound tương quan ${f(DA.MRB.corr_c,3)} với giá vốn và bằng trung bình ${f(DA.MRB.ratio_c_mean,3)} lần giá vốn (hệ số biến thiên của tỷ số chỉ ${f(DA.MRB.ratio_c_cv*100,1)}%); mọi giá chào lịch sử đều nằm dưới cận này.`,{})]));
+k.push(p([run(`Về nhãn kết quả, so với bản nháp trước đối soát, ${DA.labels.n_changed} trên ${DA.shape.item[0].toLocaleString("de-DE")} dòng hàng (${f(DA.labels.pct_changed,2)}%, thuộc ${DA.labels.projects_touched} hồ sơ) đổi trạng thái: ${DA.labels.n_1to0} dòng từ thắng sang thua và ${DA.labels.n_0to1} dòng từ thua sang thắng; tỷ lệ thắng chung đổi từ ${f(DA.labels.win_rate_v1*100,2)}% sang ${f(DA.labels.win_rate_v3*100,2)}%. Các thay đổi này không phân bố ngẫu nhiên: dòng hàng đổi nhãn có độ sâu hàng đợi trung bình ${f(DA.labels.Q_mean_changed,1)} so với ${f(DA.labels.Q_mean_unchanged,1)} ở dòng không đổi; mọi dòng chuyển thắng → thua có độ sâu hàng đợi từ ${DA.labels.Q_min_1to0} trở lên, mọi dòng chuyển thua → thắng có độ sâu hàng đợi không quá ${DA.labels.Q_max_0to1}.`,{}),
+  fn("Một quy trình đối soát hợp lệ có thể sinh ra cấu trúc như vậy — chẳng hạn khi các đơn hàng chậm phản hồi bị khách hàng hủy sau thời điểm trích xuất bản nháp. Tuy nhiên, vì các biến hàng đợi và thời gian xử lý chính là biến được kiểm định ở BT2, luận văn không coi việc đối soát là trung lập: mọi kết luận về hai biến này được báo cáo song song trên cả hai phiên bản nhãn (Mục 4.2.5, Bảng B.4), và hồ sơ đối soát gốc cần được lưu kèm luận văn để hội đồng kiểm tra."),
+  run(" Hệ quả phương pháp: mọi kết luận phụ thuộc vào biến hàng đợi và thời gian xử lý trong mô hình xác suất thắng được báo cáo kèm phân tích độ nhạy theo phiên bản nhãn.",{})]));
 k.push(p([run("Khai báo bắt buộc về xử lý bảo mật. ",{bold:true,color:C.DRED}),
   run("Bộ dữ liệu đã trải qua bước chuẩn hóa và ẩn danh hóa theo yêu cầu của doanh nghiệp, gồm băm định danh khách hàng, thêm nhiễu có kiểm soát vào trường thời gian, và xáo trộn nhẹ hệ số markup. Hệ quả cần nêu rõ ở mọi phát biểu định lượng: các kết luận định tính — thứ tự các khâu, dấu của hệ số, cấu trúc biến động, chiều của tương quan — bền vững hơn từng con số tuyệt đối cụ thể.",{})]));
 
@@ -167,8 +175,33 @@ k.push(p([run("Trả lời câu hỏi về dạng hàm: ",{bold:true}),
 
 k.push(h3("3.4.3. Chính sách giá cân bằng và kiểm định giả thuyết H1"));
 k.push(p("Chính sách cân bằng được xây dựng theo nghiệm dạng đóng của Krishna (2009) đã trình bày ở mục 2.2.3. Việc triển khai đòi hỏi hai tham số không quan sát trực tiếp được: cận trên của miền chi phí và số đối thủ hiệu dụng."));
+k.push(p("Luận văn đối sánh ba đặc tả cho cận trên của miền chi phí, khác nhau ở cấp độ và nguồn thông tin dùng để xác định c̄_i."));
+k.push(fx([
+"Đặc tả A — cận tuyệt đối theo nhóm vật liệu, N hiệu chỉnh lai:",
+"    p*_A,i = c_i + ( P99_cat(c) − c_i ) / N_hyb(tầng)",
+"Đặc tả B — cận tỷ lệ cố định, δ từ độ phân tán T/c:",
+"    p*_B,i = c_i + δ · c_i / N_hyb(tầng) ,   δ = CV(T/c) · √3",
+"Đặc tả C — cận dự trữ cấp dòng hàng, số đối thủ thực tế (bản v3):",
+"    p*_C,i = c_i + ( Market_Reserve_Bound_i − c_i ) / Effective_Competitors_N_i",
+"",
+"Mọi đặc tả được đánh giá ở hai dạng: kẹp trong [P5 ; P95] markup lịch sử,",
+"và dạng đóng thuần (không kẹp); báo cáo tỷ lệ khuyến nghị nằm ngoài dải."]));
+k.push(p("Ngoài ba đặc tả thuần, luận văn đánh giá một dạng lai cho đặc tả C: lấy giá cân bằng làm điểm neo và tìm mức giá tối đa hóa lợi nhuận kỳ vọng theo hàm phản hồi logistic của BT2 trong vùng tin cậy ±5% quanh điểm neo (vẫn trong dải lịch sử). Dạng lai này không còn là nghiệm cân bằng thuần, và được báo cáo tách biệt."));
 k.push(p("Số đối thủ hiệu dụng được hiệu chỉnh bằng bốn phương pháp độc lập — phương pháp mô-men trên mức markup, suy từ tỷ lệ thắng theo quan hệ cân bằng đối xứng, ánh xạ theo đánh giá chuyên gia, và phương pháp lai kết hợp hình dạng từ tỷ lệ thắng với mức neo từ ánh xạ chuyên gia. Việc dùng bốn phương pháp không nhằm chọn ra phương pháp đúng mà nhằm đo độ rộng của khoảng bất định: nếu bốn phương pháp cho kết quả phân tán mạnh thì tham số này không được nhận dạng từ dữ liệu, và mọi kết luận phụ thuộc vào nó phải được kèm phân tích độ nhạy."));
-k.push(p([run("Hệ quả kiểm định được của H1. ",{bold:true}),
+k.push(p([run("Hệ quả kiểm định được của H1 — kiểm định đối chiếu hai mặt. ",{bold:true}),
+  run("Hệ quả so sánh tĩnh của nghiệm cân bằng là độ co giãn của biên giá theo số đối thủ bằng âm một. Luận văn kiểm định hệ quả này trên hai loại mức giá có bản chất khác nhau, với sai số chuẩn cụm theo hồ sơ.",{})]));
+k.push(fx([
+"Mặt (1) — hành vi lịch sử:   ln(Markup_i) = a + b · ln(N_i) + u_i     (và ln(Markup_i − 1))",
+"    H0(cost-plus): b = 0     H0(BNE): b = −1",
+"",
+"Mặt (2) — giá do mô hình sinh ra:",
+"    (2a) Tối ưu FOC:   ln( p*_FOC,i / c_i − 1 ) = a + b · ln(N_i) + u_i",
+"    (2b) Đặc tả C:     ln( p*_C,i  / c_i − 1 ) = a + b · ln(N_i) + u_i",
+"",
+"N_i = Effective_Competitors_N ;  n = 7.519 dòng hàng ;  SE cụm theo hồ sơ"]));
+k.push(p([run("Cần đọc đúng nội dung thông tin của từng mặt. ",{bold:true,color:C.DRED}),
+  run("Mặt (1) là kiểm định thực nghiệm về hành vi của doanh nghiệp. Mặt (2a) là kiểm định về tính chất so sánh tĩnh của mô hình phản hồi đã ước lượng: N không có mặt trong công thức giá, mà tác động qua hệ số cạnh tranh của hàm logistic, nên độ dốc là kết quả có nội dung — nhưng là nội dung về mô hình, không phải về thị trường. Mặt (2b) chỉ là kiểm tra tính nhất quán nội tại: theo mục 2.2.3, độ dốc bằng −1 + cov(ln δ_i, ln N_i)/var(ln N_i) theo định nghĩa, nên kết quả gần −1 không được tính là bằng chứng cho H1.",{})]));
+k.push(p([run("Kiểm định gốc (giữ nguyên từ bản trước để so sánh). ",{bold:true}),
   run("Thay vì kiểm định trực tiếp giả thuyết về lợi nhuận, luận văn kiểm định hệ quả so sánh tĩnh của nghiệm cân bằng: với chi phí phân phối đều, logarit của hệ số markup giảm tuyến tính theo logarit của số đối thủ với độ dốc xấp xỉ âm một. Mô hình kiểm định là hồi quy log–log của hệ số markup theo số đối thủ hiệu dụng, và giả thuyết không được đặt ở hai mức: độ dốc bằng âm một theo lý thuyết cân bằng, và độ dốc bằng không theo giả thuyết định giá cost-plus.",{})]));
 
 k.push(h3("3.4.4. Giá bóng của năng lực xử lý và kiểm định giả thuyết H2"));
@@ -183,6 +216,9 @@ k.push(fx([
 "Bước 3 — quy ra tiền:",
 "    λ(Q) = π_SLA · Δ(Q)",
 "    với π_SLA là chi phí một lần vi phạm cam kết thời gian"]));
+k.push(p("Phiên bản có trọng số nhạy cảm cam kết nhân giá bóng với hệ số Urgency_SLA_Sensitivity của hồ sơ, phản ánh việc một lần trễ hạn với khách hàng chiến lược hoặc hồ sơ nhiều cấp phê duyệt đắt hơn một lần trễ hạn thông thường:"));
+k.push(fx(["λ_U,j(Q) = U_j · π_SLA · Δ(Q) ,     U_j = Urgency_SLA_Sensitivity_j ∈ { 1,00 ; 1,25 ; 1,50 ; 1,88 }",
+  "Giả dược tương ứng:  λ̄_U = trung bình của λ_U,j(Q) trên tập kiểm tra, cộng như một hằng số"]));
 k.push(p([run("Hai lựa chọn thiết kế cần khai báo",{}),fn("Tham số δ của đặc tả B được hiệu chỉnh từ hệ số biến thiên của tỷ số giá mục tiêu trên giá vốn nhân với √3: với phân phối đều trên [a, b], hệ số biến thiên bằng (b − a) / (√3 · (a + b)), nên nửa độ rộng tương đối của miền là CV · √3. Kết quả δ ≈ 0,181."),run(". Thứ nhất, giá bóng được chặn trên tại mức độ sâu hàng đợi mà từ đó dữ liệu trở nên thưa, nhằm tránh ngoại suy vào vùng ít quan sát. Thứ hai, luận văn triển khai hai dạng chính sách để so sánh: cộng thẳng giá bóng vào giá chào, và nội sinh hóa giá bóng vào chi phí trước khi áp công thức định giá. Hai dạng này khác nhau về mặt lý thuyết và chênh lệch giữa chúng là một phần của phân tích độ nhạy.",{})]));
 
 k.push(h3("3.4.5. Kiểm chứng giả dược"));
@@ -190,6 +226,35 @@ k.push(p("Một chính sách phức tạp có thể cho kết quả tốt hơn h
 k.push(p("Luận văn áp dụng kiểm chứng giả dược theo nguyên tắc sau: xây dựng một nhánh đối chứng trong đó thành phần giá bóng phụ thuộc hàng đợi được thay bằng một hằng số có cùng giá trị trung bình, giữ nguyên mọi thành phần còn lại. Hai nhánh khi đó có cùng tác động trung bình lên mặt bằng giá nhưng khác nhau ở chỗ có hay không có điều tiết theo trạng thái hàng đợi. Chênh lệch kết quả giữa hai nhánh chính là đóng góp riêng của cơ chế điều tiết."));
 k.push(p([run("Đây là yêu cầu bắt buộc, không phải bước kiểm tra tùy chọn. ",{bold:true}),
   run("Mọi phát biểu về giá trị của thành phần xét năng lực trong luận văn đều được đặt sau kết quả của kiểm chứng này.",{})]));
+
+k.push(h3("3.4.6. Thiết kế nghiên cứu mô phỏng liên kỳ có kiểm soát"));
+k.push(p("Đánh giá ở các mục 3.4.1–3.4.5 là đánh giá tĩnh một kỳ: mỗi dòng hàng được định giá độc lập, trên trạng thái hàng đợi đã quan sát. Khung này có một điểm mù cấu trúc — quyết định giá diễn ra SAU khi hồ sơ đã nằm trong hàng đợi, và không có vòng phản hồi từ quyết định hôm nay sang hàng đợi của hồ sơ đến sau. Vì vậy nó không thể đo lợi ích của một cơ chế điều phối tác động lên thứ tự xử lý. Mục 4.4 lấp khoảng trống này bằng một mô hình mô phỏng rời rạc theo sự kiện, với bốn nguyên tắc thiết kế được cố định trước khi chạy."));
+k.push(p([run("Nguyên tắc 1 — Neo vào quan sát. ",{bold:true}),
+  run("Mô phỏng phát lại đúng 1.500 hồ sơ thực: thời điểm tiếp nhận, thời gian Sales, WBS và Supply Chain giữ nguyên như dữ liệu; chỉ thời gian chờ tại khâu Pricing thay đổi theo cơ chế điều phối. Gọi W_j^FIFO và W_j^π là thời gian chờ của hồ sơ j dưới quy tắc vào trước phục vụ trước và dưới cơ chế π trên cùng chuỗi số ngẫu nhiên. Đại lượng phản thực được tính bằng cách cộng chênh lệch vào giá trị QUAN SÁT: TAT_j^π = TAT_j^obs + (W_j^π − W_j^FIFO), và độ sâu hàng đợi tương đương Q_j^π = Q_j^obs + μ·(W_j^π − W_j^FIFO), với μ là tốc độ phục vụ của đội Pricing. Nhờ đó kịch bản hiện trạng tái lập chính xác dữ liệu, và mô phỏng chỉ đóng vai trò tạo ra chênh lệch phản thực.",{})]));
+k.push(p([run("Nguyên tắc 2 — Giá không tác động lên hàng đợi. ",{bold:true}),
+  run("Công việc định giá phát sinh khi hồ sơ được tiếp nhận, trước quyết định giá; do đó trong mô phỏng, chính sách giá chỉ thay đổi xác suất thắng chứ không thay đổi khối lượng việc. Đây là giả định đã nêu ở mục 2.2.4, được giữ tường minh để mô phỏng kiểm tra đúng lập luận đó thay vì giả định ngược lại.",{})]));
+k.push(p([run("Nguyên tắc 3 — Hai cách hiệu chỉnh hàng đợi. ",{bold:true}),
+  run("Khâu Pricing được mô hình hóa như hệ m máy phục vụ song song, không ngắt, với thời gian phục vụ bằng κ lần thời gian Pricing quan sát nhân nhiễu log-chuẩn. Tham số (m, κ) được hiệu chỉnh để thời gian chờ trung bình dưới FIFO khớp một mục tiêu. Hiệu chỉnh C1 lấy mục tiêu là phần thời gian Pricing quy được cho hàng đợi theo hồi quy BT1 (hệ số của Q nhân Q trung bình); hiệu chỉnh C2 lấy phần thời gian TỔNG quy được cho tải hàng đợi, tức coi tắc nghẽn là hiện tượng toàn chuỗi. C1 là cận dưới thận trọng, C2 là cận trên của dư địa điều phối.",{})]));
+k.push(p([run("Nguyên tắc 4 — Đánh giá có giả dược và bất định tham số. ",{bold:true}),
+  run("Mỗi lần lặp rút lại bộ hệ số BT2 từ phân phối chuẩn nhiều chiều với ma trận hiệp phương sai ước lượng, nên kết quả phản ánh cả bất định ước lượng của β_TAT và β_Queue, không chỉ nhiễu mô phỏng. Mọi cơ chế dùng chung chuỗi số ngẫu nhiên; so sánh là so sánh cặp qua 200 lần lặp.",{})]));
+k.push(p("Bốn cơ chế chính, hai nhánh phân rã và một biến thể được so sánh:"));
+k.push(fx([
+"P1  Hiện trạng: giá lịch sử (thực chất cost-plus) + FIFO",
+"P2  CBPO Realistic + FIFO",
+"P3  Giả dược: CBPO trên c + λ̄ (hằng số) + FIFO",
+"P4  Đồng bộ: phân luồng G2 tại pha Sales-WBS + CBPO trên c + λ_U(Q) động",
+"P5  Phân rã: chỉ phân luồng G2 + CBPO (không cộng λ vào giá)",
+"P6  Phân rã: CBPO + λ_U(Q) động + FIFO (chỉ tín hiệu giá)",
+"P7  Biến thể: phân luồng G1 (ngưỡng giá bóng thuần) + CBPO + λ_U(Q)"]));
+k.push(p("Hai quy tắc phân luồng được so sánh, và trình tự xây dựng chúng cần khai báo để minh bạch bậc tự do của người nghiên cứu: G1 được thiết kế trước; G2 được bổ sung sau khi chạy thử sơ bộ cho thấy G1 mất hiệu quả khi π_SLA cao, và cả hai được báo cáo đầy đủ trong Mục 4.4. G1 là ánh xạ trực tiếp của bid-price control: hồ sơ vào làn nhanh nếu còn kịp cam kết và giá trị kỳ vọng có trọng số U_j·E[π_j] không thấp hơn giá bóng của suất xử lý mà nó chiếm; làn nhanh xếp theo hạn chót, làn chuẩn theo FIFO. G2 là chỉ số ưu tiên chi phí trễ dạng ATC (mục 2.2.4), trong đó giá bóng có trọng số λ_U,j(Q_t) đóng vai trò trọng số của chi phí vi phạm, cộng thêm tốc độ xói mòn lợi nhuận r_j do chờ — tính từ β_TAT và β_Queue của BT2:"));
+k.push(fx([
+"Hồ sơ còn kịp cam kết (d_j − ŵ_j − t ≥ 0):",
+"    I_j(t) = [ λ_U,j(Q_t) · exp( −(d_j − ŵ_j − t) / w̄ ) + r_j · w̄ ] / ŵ_j",
+"Hồ sơ không còn kịp:   I_j(t) = r_j · w̄ / ŵ_j      (luôn xếp sau làn nhanh)",
+"",
+"r_j = − Σ_{i∈j} (p_i − c_i) · P_i (1 − P_i) · ( β_TAT/sd_TAT + β_Q · μ / sd_Q )",
+"ŵ_j, d_j: thời gian Pricing và hạn chót DỰ BÁO tại thời điểm tiếp nhận (không dùng thông tin tương lai)"]));
+k.push(p("Chỉ tiêu đánh giá là lợi nhuận ròng đã điều chỉnh chi phí cam kết: tổng lợi nhuận kỳ vọng trừ π_SLA · U_j cho mỗi hồ sơ vi phạm. Mặt phẳng chuyển pha được quét trên lưới hai chiều: hệ số nhân k ∈ {0; 0,5; 1; 1,5; 2; 3} áp đồng thời cho |β_TAT| và |β_Queue|, và π_SLA ∈ {0,5; 1; 2; 3; 5} lần biên lợi nhuận trung bình mỗi dòng hàng."));
 
 /* ══════════ 3.5 ══════════ */
 k.push(h2("3.5. Bộ chỉ số đánh giá và quy tắc báo cáo"));
@@ -200,6 +265,7 @@ k.push(mkTable(
     ["Hồi quy (BT1)","R² hiệu chỉnh; AIC; BIC; sai số tuyệt đối trung bình và căn bậc hai sai số bình phương trung bình theo đơn vị ngày; VIF","R² kiểm chứng chéo và sai số ngoài mẫu"],
     ["Logistic (BT2)","McFadden hiệu chỉnh; Nagelkerke; AIC; BIC; diện tích dưới đường cong ROC; điểm Brier","Diện tích dưới đường cong ROC và điểm Brier trên tập kiểm tra tách theo cụm dự án"],
     ["Chính sách giá (BT3)","Lợi nhuận kỳ vọng; tỷ lệ thắng; tỷ lệ khuyến nghị bị kẹp biên","Chênh lệch so với nhánh giả dược, không phải chênh lệch so với hiện trạng"],
+    ["Mô phỏng liên kỳ (Mục 4.4)","Lợi nhuận ròng sau chi phí SLA; tỷ lệ vi phạm; thời gian chờ theo nhóm hồ sơ","Chênh lệch cặp so với nhánh giả dược qua 200 lần lặp có bất định tham số"],
   ],[1700,4100,3200]));
 k.push(cap("Bảng 3.5: Bộ chỉ số đánh giá áp dụng thống nhất cho ba bài toán"));
 k.push(p("Ba quy tắc báo cáo đi kèm. Thứ nhất, mọi mô hình ở cấp dòng hàng phải báo cáo chỉ số trên tập kiểm tra tách theo cụm dự án, không chỉ báo cáo chỉ số nội mẫu. Thứ hai, mọi mô hình hồi quy phải kèm kết quả chẩn đoán giả định trước khi diễn giải hệ số. Thứ ba, mọi chính sách giá phải báo cáo tỷ lệ khuyến nghị nằm ngoài dải hành vi lịch sử, vì tỷ lệ này cho biết đầu ra đang do công thức quyết định hay do ràng buộc kỹ thuật quyết định."));
@@ -221,7 +287,7 @@ k.push(fx([
 k.push(p([run("Phân tầng và chỉ tiêu bảo vệ. ",{bold:true}),
   run("Phân bổ ngẫu nhiên có phân tầng theo tổ hợp phân hạng khách hàng và cường độ cạnh tranh, nhằm bảo đảm hai nhánh cân bằng trên các chiều quan trọng. Ngoài chỉ tiêu chính là lợi nhuận, thực nghiệm theo dõi một chỉ tiêu bảo vệ là tỷ lệ thắng, với biên không thua kém được đăng ký trước.",{})]));
 k.push(p([run("Hai yêu cầu thiết kế được đăng ký trước. ",{bold:true,color:C.RED}),
-  run("Thứ nhất, hàm mục tiêu phải là hàm hai chiều gồm cả lợi nhuận và số lần vi phạm cam kết thời gian, vì đánh giá chỉ theo lợi nhuận sẽ tính đủ chi phí nhưng bỏ sót lợi ích của thành phần xét năng lực. Thứ hai, thiết kế phải có một nhánh giả dược cộng hằng số, để tách hiệu ứng cơ chế khỏi hiệu ứng nâng giá. Tham số cụ thể của thiết kế, ước lượng từ dữ liệu, được trình bày tại mục 4.5.",{})]));
+  run("Thứ nhất, hàm mục tiêu phải là hàm hai chiều gồm cả lợi nhuận và số lần vi phạm cam kết thời gian, vì đánh giá chỉ theo lợi nhuận sẽ tính đủ chi phí nhưng bỏ sót lợi ích của thành phần xét năng lực. Thứ hai, thiết kế phải có một nhánh giả dược cộng hằng số, để tách hiệu ứng cơ chế khỏi hiệu ứng nâng giá. Do đó thiết kế đề xuất gồm ba nhánh: đối chứng (hiện trạng), can thiệp (định giá theo xác suất thắng, kết hợp bộ lọc phân luồng nếu được triển khai), và giả dược nâng giá đồng loạt có cùng tác động trung bình; hai phép so sánh với đối chứng được hiệu chỉnh Bonferroni. Tham số cụ thể của thiết kế, ước lượng từ dữ liệu, được trình bày tại mục 4.6.",{})]));
 
 return k;
 };

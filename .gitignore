@@ -7,3 +7,4 @@ src/*.json
 !src/package-lock.json
 src/FIG_*.png
 src/ChuThaiNguyen_LuanVan_*.docx
+src/*.pkl
