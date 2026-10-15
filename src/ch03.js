@@ -2,7 +2,7 @@
 module.exports=function(L){
 const {C,run,p,h1,h2,h3,cap,fx,mkTable,fn,img}=L;
 const fs=require("fs"); const J=f=>JSON.parse(fs.readFileSync(f,"utf8"));
-const DA=J("data_audit.json"), B12=J("ch4_bt12.json");
+const S1=J("ch1_stats.json"), B12=J("ch4_bt12.json"); const DL=S1.du_lieu;
 const f=(x,d=2)=>Number(x).toFixed(d).replace(".",",").replace(/^-/,"−");
 const k=[];
 
@@ -15,29 +15,31 @@ k.push(cap("Hình 3.1: Khung phương pháp — trục khai phá dữ liệu the
 k.push(h2("3.1. Dữ liệu và quy trình chuẩn bị"));
 
 k.push(h3("3.1.1. Nguồn dữ liệu và cấu trúc hai cấp"));
-k.push(p("Dữ liệu trích xuất từ hệ thống hoạch định nguồn lực doanh nghiệp (ERP) của đơn vị nghiên cứu, gồm hai bảng ở hai cấp phân tích khác nhau và liên kết với nhau qua khóa dự án. Luận văn sử dụng bản trích xuất lại (bản v3), trong đó mỗi bảng được bổ sung các trường liên kết từ phân hệ quản trị quan hệ khách hàng (CRM) và phân hệ tìm nguồn (Sourcing), cùng trạng thái đơn hàng đã đối soát cuối kỳ."));
+k.push(p("Dữ liệu trích xuất từ hệ thống hoạch định nguồn lực doanh nghiệp (ERP) của đơn vị nghiên cứu, liên kết với phân hệ quản trị quan hệ khách hàng (CRM) và phân hệ tìm nguồn (Sourcing), gồm hai bảng ở hai cấp phân tích khác nhau và liên kết với nhau qua khóa dự án."));
 k.push(mkTable(
-  ["Bảng","Cấp phân tích","Quy mô","Nhóm biến chính","Trường bổ sung ở bản v3"],
+  ["Bảng","Cấp phân tích","Quy mô","Nhóm biến chính"],
   [
-    ["HeadView","Hồ sơ RFQ (dự án)",`${DA.shape.head[0].toLocaleString("de-DE")} bản ghi × ${DA.shape.head[1]} trường`,"Thời gian xử lý từng khâu và thời gian tổng; đặc điểm khách hàng; cường độ cạnh tranh; độ sâu hàng đợi; kinh nghiệm kỹ sư phụ trách","Effective_Competitors_N — số đối thủ thực tế tham gia cơ hội (CRM)\nUrgency_SLA_Sensitivity — hệ số nhạy cảm cam kết thời gian (CRM)"],
-    ["ItemView","Dòng hàng trong hồ sơ",`${DA.shape.item[0].toLocaleString("de-DE")} bản ghi × ${DA.shape.item[1]} trường`,"Giá vốn, hệ số markup, giá chào, giá mục tiêu; thuộc tính nhà cung cấp; kết quả thắng/thua từng dòng","Market_Reserve_Bound — cận trên giá dự trữ cấp dòng hàng (Sourcing)\nItem_Win_Status — trạng thái thắng/thua đã đối soát cuối kỳ"],
-  ],[1150,1450,1600,2500,2300]));
-k.push(cap("Bảng 3.1: Cấu trúc hai cấp của bộ dữ liệu nghiên cứu (bản v3) và các trường bổ sung"));
+    ["HeadView","Hồ sơ RFQ (dự án)",`${DL.head_shape[0].toLocaleString("de-DE")} bản ghi × ${DL.head_shape[1]} trường`,"Thời gian xử lý từng khâu và thời gian tổng; đặc điểm khách hàng; cường độ cạnh tranh và số đối thủ thực tế (Effective_Competitors_N, từ CRM); chỉ số nhạy cảm cam kết thời gian (Urgency_SLA_Sensitivity); độ sâu hàng đợi; kinh nghiệm kỹ sư phụ trách"],
+    ["ItemView","Dòng hàng trong hồ sơ",`${DL.item_shape[0].toLocaleString("de-DE")} bản ghi × ${DL.item_shape[1]} trường`,"Giá vốn, hệ số markup, giá chào, giá mục tiêu; cận trên giá dự trữ cấp dòng hàng (Market_Reserve_Bound, từ Sourcing); thuộc tính nhà cung cấp; kết quả thắng/thua từng dòng theo trạng thái đơn hàng cuối kỳ"],
+  ],[1300,1700,2000,4000]));
+k.push(cap("Bảng 3.1: Cấu trúc hai cấp của bộ dữ liệu nghiên cứu"));
 k.push(p("Cấu trúc hai cấp này quyết định cách phân chia dữ liệu và cách chọn đơn vị phân tích cho từng bài toán. BT1 làm việc ở cấp hồ sơ vì thời gian xử lý là thuộc tính của cả hồ sơ, không của từng dòng hàng. BT2 và BT3 làm việc ở cấp dòng hàng vì kết quả thắng thua và quyết định giá được ghi nhận cho từng mặt hàng. Trung bình mỗi hồ sơ chứa 5,50 dòng hàng, nghĩa là các quan sát ở cấp dòng hàng không độc lập với nhau — chúng phân cụm theo hồ sơ."));
 
 k.push(h3("3.1.2. Làm sạch dữ liệu và xử lý giá trị khuyết"));
 k.push(p("Bộ dữ liệu thô gồm 11.694 bản ghi dòng hàng, sau khi loại các bản ghi trùng lặp, bản ghi thiếu khóa liên kết và bản ghi có trạng thái mua hàng không xác định còn 8.249 bản ghi hợp lệ. Về giá trị khuyết, hai trường có tỷ lệ khuyết đáng kể là điểm chất lượng nhà cung cấp (412 bản ghi, 5,0%) và chỉ số cạnh tranh về giá (329 bản ghi, 4,0%); các trường còn lại đầy đủ."));
-k.push(p([run("Luận văn xử lý giá trị khuyết bằng cách loại bỏ theo danh sách đầy đủ",{}),fn("Loại bỏ theo danh sách đầy đủ (listwise deletion) được chọn thay cho gán khuyết vì tỷ lệ khuyết dưới 5% và hai trường khuyết đều là biến độc lập; gán khuyết bằng mô hình sẽ đưa thêm một tầng bất định vào chính biến giá — biến quan trọng nhất của BT2."),run(` cho mô hình BT2, giữ lại ${B12.bt2_n.items.toLocaleString("de-DE")} dòng hàng thuộc ${B12.bt2_n.projects.toLocaleString("de-DE")} hồ sơ. Lựa chọn này được kiểm tra về tính không chọn lọc: tỷ lệ thắng trên tập sau khi loại là ${f(B12.bt2_n.win_rate*100,2)}%, so với ${f(DA.labels.win_rate_v3*100,2)}% trên toàn bộ dữ liệu — chênh lệch ${f(Math.abs(B12.bt2_n.win_rate-DA.labels.win_rate_v3)*100,2)} điểm phần trăm cho thấy việc khuyết dữ liệu không tương quan hệ thống với biến kết quả. Ba trường bổ sung của bản v3 không có giá trị khuyết.`,{})]));
-k.push(p([run("Khai báo về phiên bản dữ liệu và kiểm toán trường bổ sung. ",{bold:true,color:C.DRED}),
-  run(`Trước khi sử dụng, ba trường bổ sung được kiểm toán đối chiếu với các trường sẵn có, và kết quả cần được khai báo vì nó quyết định cách diễn giải các mô hình dùng chúng. Thứ nhất, Effective_Competitors_N là ánh xạ một-một từ Competitor_Intensity ở tầng thấp và trung bình (Low → 2, Med → 3) và tách tầng cao thành hai giá trị (4 hoặc 5); do đó nó chứa thông tin mới chủ yếu ở tầng cạnh tranh cao. Thứ hai, Urgency_SLA_Sensitivity nhận bốn giá trị và trùng khớp ${f(DA.Urgency.rule_match_frac*100,0)}% với quy tắc ${DA.Urgency.rule} — tức là một trường dẫn xuất từ hai trường đã có, không mang thông tin độc lập. Thứ ba, Market_Reserve_Bound tương quan ${f(DA.MRB.corr_c,3)} với giá vốn và bằng trung bình ${f(DA.MRB.ratio_c_mean,3)} lần giá vốn (hệ số biến thiên của tỷ số chỉ ${f(DA.MRB.ratio_c_cv*100,1)}%); mọi giá chào lịch sử đều nằm dưới cận này.`,{})]));
-k.push(p([run(`Về nhãn kết quả, so với bản nháp trước đối soát, ${DA.labels.n_changed} trên ${DA.shape.item[0].toLocaleString("de-DE")} dòng hàng (${f(DA.labels.pct_changed,2)}%, thuộc ${DA.labels.projects_touched} hồ sơ) đổi trạng thái: ${DA.labels.n_1to0} dòng từ thắng sang thua và ${DA.labels.n_0to1} dòng từ thua sang thắng; tỷ lệ thắng chung đổi từ ${f(DA.labels.win_rate_v1*100,2)}% sang ${f(DA.labels.win_rate_v3*100,2)}%. Các thay đổi này không phân bố ngẫu nhiên: dòng hàng đổi nhãn có độ sâu hàng đợi trung bình ${f(DA.labels.Q_mean_changed,1)} so với ${f(DA.labels.Q_mean_unchanged,1)} ở dòng không đổi; mọi dòng chuyển thắng → thua có độ sâu hàng đợi từ ${DA.labels.Q_min_1to0} trở lên, mọi dòng chuyển thua → thắng có độ sâu hàng đợi không quá ${DA.labels.Q_max_0to1}.`,{}),
-  fn("Một quy trình đối soát hợp lệ có thể sinh ra cấu trúc như vậy — chẳng hạn khi các đơn hàng chậm phản hồi bị khách hàng hủy sau thời điểm trích xuất bản nháp. Tuy nhiên, vì các biến hàng đợi và thời gian xử lý chính là biến được kiểm định ở BT2, luận văn không coi việc đối soát là trung lập: mọi kết luận về hai biến này được báo cáo song song trên cả hai phiên bản nhãn (Mục 4.2.5, Bảng B.4), và hồ sơ đối soát gốc cần được lưu kèm luận văn để hội đồng kiểm tra."),
-  run(" Hệ quả phương pháp: mọi kết luận phụ thuộc vào biến hàng đợi và thời gian xử lý trong mô hình xác suất thắng được báo cáo kèm phân tích độ nhạy theo phiên bản nhãn.",{})]));
+k.push(p([run("Luận văn xử lý giá trị khuyết bằng cách loại bỏ theo danh sách đầy đủ",{}),fn("Loại bỏ theo danh sách đầy đủ (listwise deletion) được chọn thay cho gán khuyết vì tỷ lệ khuyết dưới 5% và hai trường khuyết đều là biến độc lập; gán khuyết bằng mô hình sẽ đưa thêm một tầng bất định vào chính biến giá — biến quan trọng nhất của BT2."),run(` cho mô hình BT2, giữ lại ${B12.bt2_n.items.toLocaleString("de-DE")} dòng hàng thuộc ${B12.bt2_n.projects.toLocaleString("de-DE")} hồ sơ. Lựa chọn này được kiểm tra về tính không chọn lọc: tỷ lệ thắng trên tập sau khi loại là ${f(B12.bt2_n.win_rate*100,2)}%, so với ${f(S1.gia_tri.ty_le_thang_mat_hang*100,2)}% trên toàn bộ dữ liệu — chênh lệch ${f(Math.abs(B12.bt2_n.win_rate-S1.gia_tri.ty_le_thang_mat_hang)*100,2)} điểm phần trăm cho thấy việc khuyết dữ liệu không tương quan hệ thống với biến kết quả. Ba trường liên kết từ CRM và Sourcing không có giá trị khuyết.`,{})]));
 k.push(p([run("Khai báo bắt buộc về xử lý bảo mật. ",{bold:true,color:C.DRED}),
   run("Bộ dữ liệu đã trải qua bước chuẩn hóa và ẩn danh hóa theo yêu cầu của doanh nghiệp, gồm băm định danh khách hàng, thêm nhiễu có kiểm soát vào trường thời gian, và xáo trộn nhẹ hệ số markup. Hệ quả cần nêu rõ ở mọi phát biểu định lượng: các kết luận định tính — thứ tự các khâu, dấu của hệ số, cấu trúc biến động, chiều của tương quan — bền vững hơn từng con số tuyệt đối cụ thể.",{})]));
 
 k.push(h3("3.1.3. Xây dựng đặc trưng"));
 k.push(p("Ngoài các trường có sẵn, luận văn xây dựng thêm ba nhóm đặc trưng. Nhóm thứ nhất là các chỉ số tổng hợp về độ phức tạp hồ sơ, thu được bằng phân tích thành phần chính trên ba biến số cấp phê duyệt, số lần làm rõ bản vẽ và độ sâu hàng đợi. Nhóm thứ hai là các đặc trưng lịch sử khách hàng, tính từ các hồ sơ phát sinh trước thời điểm của hồ sơ đang xét. Nhóm thứ ba là các đặc trưng vị thế giá trong nhóm hàng."));
+k.push(p([run("Chỉ số nhạy cảm cam kết thời gian. ",{bold:true}),
+  run("Trường Urgency_SLA_Sensitivity là một chỉ số nghiệp vụ được thiết kế theo quy tắc phân tầng cam kết dịch vụ của doanh nghiệp: hồ sơ của khách hàng chiến lược được nâng trọng số 50%, và hồ sơ đòi hỏi từ ba cấp phê duyệt trở lên được nâng thêm 25% do rủi ro trễ hạn cao hơn. Hai hệ số nhân với nhau, nên chỉ số nhận bốn mức giá trị:",{})]));
+k.push(fx([
+"Urgency_SLA_Sensitivity = ( 1 + 0,5 · Is_Strategic ) × ( 1 + 0,25 · 1[ Required_Approval_Levels ≥ 3 ] )",
+"",
+`Giá trị: { 1,00 ; 1,25 ; 1,50 ; 1,88 } với số hồ sơ tương ứng { ${Object.values(DL.Urgency_values).join(" ; ")} } ;  trung bình ${f(DL.Urgency_mean,3)}`]));
+k.push(p(`Chỉ số này được dùng làm trọng số chi phí vi phạm cam kết trong giá bóng λ_U(Q) (Mục 3.4.4) và trong quy tắc phân luồng của nghiên cứu mô phỏng (Mục 3.4.6). Hai trường liên kết còn lại được dùng nguyên trạng: Effective_Competitors_N là số đối thủ thực tế ghi nhận trên CRM (2 ở tầng cạnh tranh thấp, 3 ở tầng trung bình, 4 hoặc 5 ở tầng cao; trung bình ${f(DL.EffN_mean,3)}), và Market_Reserve_Bound là cận trên giá dự trữ cấp dòng hàng từ Sourcing (trung bình ${f(DL.MRB_ratio_c_mean,2)} lần giá vốn; không giá chào lịch sử nào vượt cận này).`));
 k.push(p([run("Nguyên tắc chống rò rỉ khi xây dựng đặc trưng lịch sử: ",{bold:true}),
   run("mọi đặc trưng tính từ lịch sử chỉ được sử dụng thông tin phát sinh nghiêm ngặt trước thời điểm tạo hồ sơ đang xét. Với đặc trưng tỷ lệ thắng lịch sử của khách hàng, chỉ tính khi khách hàng đã có tối thiểu ba hồ sơ trước đó, để tránh ước lượng không ổn định trên mẫu quá nhỏ.",{})]));
 
@@ -181,11 +183,12 @@ k.push(fx([
 "    p*_A,i = c_i + ( P99_cat(c) − c_i ) / N_hyb(tầng)",
 "Đặc tả B — cận tỷ lệ cố định, δ từ độ phân tán T/c:",
 "    p*_B,i = c_i + δ · c_i / N_hyb(tầng) ,   δ = CV(T/c) · √3",
-"Đặc tả C — cận dự trữ cấp dòng hàng, số đối thủ thực tế (bản v3):",
+"Đặc tả C — cận dự trữ cấp dòng hàng, số đối thủ thực tế:",
 "    p*_C,i = c_i + ( Market_Reserve_Bound_i − c_i ) / Effective_Competitors_N_i",
 "",
 "Mọi đặc tả được đánh giá ở hai dạng: kẹp trong [P5 ; P95] markup lịch sử,",
 "và dạng đóng thuần (không kẹp); báo cáo tỷ lệ khuyến nghị nằm ngoài dải."]));
+k.push(p([run("Với đặc tả B, δ được hiệu chỉnh từ độ phân tán của tỷ số giá mục tiêu trên giá vốn, δ = CV(T/c) · √3 ≈ 0,181",{}),fn("Tham số δ của đặc tả B được hiệu chỉnh từ hệ số biến thiên của tỷ số giá mục tiêu trên giá vốn nhân với √3: với phân phối đều trên [a, b], hệ số biến thiên bằng (b − a) / (√3 · (a + b)), nên nửa độ rộng tương đối của miền là CV · √3. Kết quả δ ≈ 0,181."),run(".",{})]));
 k.push(p("Ngoài ba đặc tả thuần, luận văn đánh giá một dạng lai cho đặc tả C: lấy giá cân bằng làm điểm neo và tìm mức giá tối đa hóa lợi nhuận kỳ vọng theo hàm phản hồi logistic của BT2 trong vùng tin cậy ±5% quanh điểm neo (vẫn trong dải lịch sử). Dạng lai này không còn là nghiệm cân bằng thuần, và được báo cáo tách biệt."));
 k.push(p("Số đối thủ hiệu dụng được hiệu chỉnh bằng bốn phương pháp độc lập — phương pháp mô-men trên mức markup, suy từ tỷ lệ thắng theo quan hệ cân bằng đối xứng, ánh xạ theo đánh giá chuyên gia, và phương pháp lai kết hợp hình dạng từ tỷ lệ thắng với mức neo từ ánh xạ chuyên gia. Việc dùng bốn phương pháp không nhằm chọn ra phương pháp đúng mà nhằm đo độ rộng của khoảng bất định: nếu bốn phương pháp cho kết quả phân tán mạnh thì tham số này không được nhận dạng từ dữ liệu, và mọi kết luận phụ thuộc vào nó phải được kèm phân tích độ nhạy."));
 k.push(p([run("Hệ quả kiểm định được của H1 — kiểm định đối chiếu hai mặt. ",{bold:true}),
@@ -219,7 +222,7 @@ k.push(fx([
 k.push(p("Phiên bản có trọng số nhạy cảm cam kết nhân giá bóng với hệ số Urgency_SLA_Sensitivity của hồ sơ, phản ánh việc một lần trễ hạn với khách hàng chiến lược hoặc hồ sơ nhiều cấp phê duyệt đắt hơn một lần trễ hạn thông thường:"));
 k.push(fx(["λ_U,j(Q) = U_j · π_SLA · Δ(Q) ,     U_j = Urgency_SLA_Sensitivity_j ∈ { 1,00 ; 1,25 ; 1,50 ; 1,88 }",
   "Giả dược tương ứng:  λ̄_U = trung bình của λ_U,j(Q) trên tập kiểm tra, cộng như một hằng số"]));
-k.push(p([run("Hai lựa chọn thiết kế cần khai báo",{}),fn("Tham số δ của đặc tả B được hiệu chỉnh từ hệ số biến thiên của tỷ số giá mục tiêu trên giá vốn nhân với √3: với phân phối đều trên [a, b], hệ số biến thiên bằng (b − a) / (√3 · (a + b)), nên nửa độ rộng tương đối của miền là CV · √3. Kết quả δ ≈ 0,181."),run(". Thứ nhất, giá bóng được chặn trên tại mức độ sâu hàng đợi mà từ đó dữ liệu trở nên thưa, nhằm tránh ngoại suy vào vùng ít quan sát. Thứ hai, luận văn triển khai hai dạng chính sách để so sánh: cộng thẳng giá bóng vào giá chào, và nội sinh hóa giá bóng vào chi phí trước khi áp công thức định giá. Hai dạng này khác nhau về mặt lý thuyết và chênh lệch giữa chúng là một phần của phân tích độ nhạy.",{})]));
+k.push(p([run("Hai lựa chọn thiết kế cần khai báo. Thứ nhất, giá bóng được chặn trên tại mức độ sâu hàng đợi mà từ đó dữ liệu trở nên thưa, nhằm tránh ngoại suy vào vùng ít quan sát. Thứ hai, luận văn triển khai hai dạng chính sách để so sánh: cộng thẳng giá bóng vào giá chào, và nội sinh hóa giá bóng vào chi phí trước khi áp công thức định giá. Hai dạng này khác nhau về mặt lý thuyết và chênh lệch giữa chúng là một phần của phân tích độ nhạy.",{})]));
 
 k.push(h3("3.4.5. Kiểm chứng giả dược"));
 k.push(p("Một chính sách phức tạp có thể cho kết quả tốt hơn hiện trạng vì cơ chế mà nó đề xuất, hoặc đơn giản vì nó nâng mặt bằng giá lên. Nếu không tách hai nguồn này, không thể quy công cho cơ chế được thiết kế."));

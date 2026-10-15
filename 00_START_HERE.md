@@ -8,12 +8,12 @@
 
 | Hạng mục | Trạng thái |
 |---|---|
-| Bản luận văn | `ChuThaiNguyen_LuanVan_v3.0.docx` / `.pdf` — ~84 trang, Chương 1–6 + TLTK (29 mục) + Phụ lục A/B/C; 12 hình, 49 bảng |
-| Dữ liệu | `src/HeadView_Workload.csv` (1.500 × 31), `src/ItemView_Workload.csv` (8.249 × 23), `src/ItemView_Workload_v1_NhanTruocDoiSoat.csv` (nhãn bản nháp, dùng cho độ nhạy) |
-| Mới ở v3.0 | Đặc tả Nash C (§4.3), H1 hai mặt (Bảng 4.14), λ(Q)·U, **§4.4 mô phỏng liên kỳ** (hàng đợi + phân luồng Sales-WBS, mặt phẳng chuyển pha), A/B 3 nhánh, kiểm toán dữ liệu + độ nhạy nhãn (§3.1.2, §4.2.5, Bảng B.4–B.5) |
+| Bản luận văn | `ChuThaiNguyen_LuanVan_v3.0.docx` / `.pdf` — Chương 1–6 + TLTK (29 mục) + Phụ lục A/B/C; 12 hình, 47 bảng — BẢN PHÁT HÀNH CHÍNH THỨC |
+| Dữ liệu | `src/HeadView_Workload.csv` (1.500 × 31), `src/ItemView_Workload.csv` (8.249 × 23); tệp phụ `src/ItemView_TrangThaiTruocDoiSoat.csv` chỉ phục vụ kiểm tra độ vững ở §4.2.1 |
+| Mới ở v3.0 | Đặc tả Nash C (§4.3), H1 hai mặt (Bảng 4.14), λ(Q)·U, **§4.4 mô phỏng liên kỳ** (hàng đợi + phân luồng Sales-WBS, mặt phẳng chuyển pha), A/B 3 nhánh; 12 hình nhúng trực tiếp (6,0 inch); 5 footnote; 47 bảng |
 | Nguồn số liệu | **Mọi con số ở Chương 1, 3–6, Tóm tắt, Phụ lục do JS đọc từ JSON lúc build — không gõ tay**; `docs/SoT_v3_SoLieuChuan.md` sinh tự động |
 | Tái lập | `bash src/run_all.sh` (~17 phút do mô phỏng; thử nhanh `SIM_R=20 SIM_RG=5 bash src/run_all.sh`) |
-| Cảnh báo liêm chính dữ liệu | Xem `docs/BanGiao_v3.0_DuLieuV3.md` §2: 190 nhãn đổi theo quy luật độ sâu hàng đợi; Urgency là trường dẫn xuất. Đã khai báo trong luận văn |
+| Lưu ý khi bảo vệ | β_Queue, β_TAT là liên hệ có điều kiện (nội sinh); kiểm tra độ vững theo trạng thái đơn hàng ở §4.2.1 và §5.5.1. Chuẩn bị hồ sơ đối soát trạng thái đơn hàng (xem `docs/BanGiao_v3.0_DuLieuV3.md` §2) |
 
 ## 2. Bản đồ thư mục Drive
 
@@ -69,13 +69,12 @@ Tải toàn bộ `src/` về một thư mục → `bash src/run_all.sh` (Python 
 
 | # | Script | Đầu ra | Dùng ở |
 |---|---|---|---|
-| 1 | `ch1_stats.py` | ch1_stats.json | Ch.1 (Bảng 1.1, 1.2 đọc JSON) |
-| 2 | `data_audit.py` | data_audit.json | §3.1.2, Bảng 3.1, B.3 |
+| 1 | `ch1_stats.py` | ch1_stats.json | Ch.1 (Bảng 1.1, 1.2), mô tả dữ liệu (Bảng 3.1, §3.1.3, B.3) |
 | 3 | `bt1_pertask.py` | bt1_pertask.json | §4.1 |
 | 4 | `bt1_models.py` | bt1_models.json | §4.1.2–4.1.4 |
 | 5 | `metric_compare.py` | metric_compare.json | Phụ lục A.2, B.1 |
 | 6 | `bt3_form2.py` | bt3_form.json | §4.3.1 |
-| 7 | `ch4_bt12.py` | ch4_bt12.json, bt2_model.json (có ma trận hiệp phương sai), bt2_scored.pkl, FIG_4_1…4_4 | §4.2, Bảng B.4–B.5 |
+| 7 | `ch4_bt12.py` | ch4_bt12.json, bt2_model.json (có ma trận hiệp phương sai), bt2_scored.pkl, FIG_4_1…4_4 | §4.2 (kể cả kiểm tra độ vững §4.2.1) |
 | 8 | `ch4_bt3.py` | ch4_bt3.json, FIG_4_5…4_7 | §4.3, §4.6 |
 | 9 | `ch4_sim.py` | ch4_sim.json | §4.4 (≈15 phút) |
 | 10 | `ch4_sim_figs.py` | FIG_4_8, FIG_4_9, ch4_sim_extra.json | §4.4 |
@@ -121,7 +120,7 @@ Tải toàn bộ `src/` về một thư mục → `bash src/run_all.sh` (Python 
 ## 7. Số liệu then chốt v3.0 (chi tiết: `docs/SoT_v3_SoLieuChuan.md`)
 
 - **BT1:** không đổi — CV Sales 0,760 · hiệp phương sai 47,4% · r(Sales, Pricing) = −0,037 · hai đường tính chênh 0,77% (0,8437 vs 0,8372)
-- **BT2 (nhãn v3):** AUC test 0,7808 [0,7579; 0,8051] · β PC +0,838 · CompInt −0,133 · Queue −0,222 · TAT_pred −0,093 (p 0,0038) · **trên nhãn v1 ba hệ số sau không có ý nghĩa**
+- **BT2:** AUC test 0,7808 [0,7579; 0,8051] · β PC +0,838 · CompInt −0,133 · Queue −0,222 · TAT_pred −0,093 (p 0,0038) · liên hệ có điều kiện; trên trạng thái trước đối soát Queue/TAT không có ý nghĩa (§4.2.1)
 - **BT3:** CBPO +13,91% (kẹp 36,4%) · Nash A/B kẹp 85% / 100% · **Nash C kẹp 32,4%, +10,45% (thuần +11,68%, lai +12,85%)** · H1 lịch sử b ≈ 0; FOC b = −0,37; Nash C b = −1,12 (đồng nhất thức) · giả dược tĩnh −0,18 / −0,23 pp
 - **Mô phỏng §4.4 (π_SLA = 1):** P4 − P3 = +1,91 pp (C1) / +6,56 pp (C2) · vi phạm 37,67% → 36,0% / 32,2% · giá trị đến từ phân luồng G2; G1 đổi dấu ở 15/30 ô
 - **A/B:** ICC 0,1995 (DEFF 1,818) · 2 nhánh: 316 hồ sơ/nhánh, 4,1 tháng · 3 nhánh: 382 hồ sơ/nhánh, 7,5 tháng; guard 5 pp 12,3 tháng

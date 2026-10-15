@@ -1,10 +1,10 @@
-// CHUONG 4 — THUC NGHIEM VA KET QUA  (v3) — moi con so doc tu JSON ket qua
+// CHUONG 4 — THUC NGHIEM VA KET QUA — moi con so doc tu JSON ket qua
 module.exports=function(L){
 const {C,run,p,h1,h2,h3,cap,fx,img,mkTable,fn}=L;
 const fs=require("fs");
 const J=f=>JSON.parse(fs.readFileSync(f,"utf8"));
 const B1=J("bt1_pertask.json"), B1M=J("bt1_models.json"), B12=J("ch4_bt12.json"), B3=J("ch4_bt3.json"),
-      FOC=J("bt3_form.json"), DA=J("data_audit.json");
+      FOC=J("bt3_form.json"), S1=J("ch1_stats.json");
 const f=(x,d=2)=>Number(x).toFixed(d).replace(".",",").replace(/^-/,"−");
 const fp=(x,d=2)=>(x>=0?"+":"")+f(x,d)+"%";
 const fs_=(x,d=4)=>(x>=0?"+":"")+f(x,d);
@@ -15,11 +15,10 @@ const fk=(x,d=1)=>Number(x).toLocaleString("de-DE",{minimumFractionDigits:d,maxi
 const k=[];
 
 k.push(h1("CHƯƠNG 4. THỰC NGHIỆM VÀ KẾT QUẢ"));
-k.push(p("Chương này trình bày kết quả theo đúng thứ tự phụ thuộc đã thiết kế ở Chương 3, trên bản dữ liệu v3 (đã bổ sung trường liên kết CRM/Sourcing và đối soát trạng thái đơn hàng cuối kỳ). Mục 4.1 trình bày BT1 với trọng tâm là chẩn đoán giả định và cấu trúc biến động theo khâu. Mục 4.2 trình bày BT2 với hệ số ước lượng, chỉ số ngoài mẫu, hiệu chuẩn và độ nhạy theo phiên bản nhãn. Mục 4.3 trình bày BT3 gồm đối sánh ba đặc tả cân bằng, kiểm định hai giả thuyết và phân tích độ nhạy. Mục 4.4 trình bày nghiên cứu mô phỏng liên kỳ có kiểm soát. Mục 4.5 tổng hợp; mục 4.6 cung cấp tham số thiết kế thực nghiệm. Mọi con số trong chương được tính trực tiếp từ mã nguồn phân tích đính kèm và là nguồn số liệu chuẩn cho các chương sau."));
+k.push(p("Chương này trình bày kết quả theo đúng thứ tự phụ thuộc đã thiết kế ở Chương 3. Mục 4.1 trình bày BT1 với trọng tâm là chẩn đoán giả định và cấu trúc biến động theo khâu. Mục 4.2 trình bày BT2 với hệ số ước lượng, chỉ số ngoài mẫu và hiệu chuẩn. Mục 4.3 trình bày BT3 gồm đối sánh ba đặc tả cân bằng, kiểm định hai giả thuyết và phân tích độ nhạy. Mục 4.4 trình bày nghiên cứu mô phỏng liên kỳ có kiểm soát. Mục 4.5 tổng hợp; mục 4.6 cung cấp tham số thiết kế thực nghiệm. Mọi con số trong chương được tính trực tiếp từ mã nguồn phân tích đính kèm và là nguồn số liệu chuẩn cho các chương sau."));
 
 /* ══════════════ 4.1 BT1 ══════════════ */
 k.push(h2("4.1. Bài toán 1 — Dự báo thời gian xử lý theo khâu"));
-k.push(p("Các trường thời gian và năm biến độc lập của BT1 không thay đổi giữa bản nháp và bản v3; vì vậy toàn bộ kết quả BT1 tái lập đúng như bản trước. Điểm thay đổi duy nhất là thời gian xử lý dự báo ngoài lớp của BT1 nay được dùng làm đầu vào cho mô hình xác suất thắng trên nhãn đã đối soát."));
 
 k.push(h3("4.1.1. Thống kê mô tả từng khâu"));
 const eda=B1.eda;
@@ -86,8 +85,8 @@ k.push(p(`Đầu ra chuyển sang BT2 là thời gian xử lý dự báo ngoài 
 
 /* ══════════════ 4.2 BT2 ══════════════ */
 k.push(h2("4.2. Bài toán 2 — Dự báo xác suất thắng"));
-const n2=B12.bt2_n, sp=B12.bt2_split, m2=B12.bt2_metrics, LS=B12.bt2_label_sens;
-k.push(p(`Mô hình logistic được ước lượng trên ${n0(n2.items)} dòng hàng hợp lệ thuộc ${n0(n2.projects)} hồ sơ sau khi loại giá trị khuyết, tỷ lệ thắng ${pct(n2.win_rate,2)} trên nhãn đã đối soát. Phân chia theo cụm dự án 80/20 cho ${n0(sp.train_items)} dòng hàng huấn luyện và ${n0(sp.test_items)} dòng hàng kiểm tra thuộc ${sp.test_projects} hồ sơ — đúng cùng phân chia với bản trước, nên mọi khác biệt so với bản trước đến từ nhãn chứ không từ cách chia. Biến độc lập được chuẩn hóa Z-score trên tập huấn luyện.`));
+const n2=B12.bt2_n, sp=B12.bt2_split, m2=B12.bt2_metrics, RB=B12.bt2_robust_status;
+k.push(p(`Mô hình logistic được ước lượng trên ${n0(n2.items)} dòng hàng hợp lệ thuộc ${n0(n2.projects)} hồ sơ sau khi loại giá trị khuyết, tỷ lệ thắng ${pct(n2.win_rate,2)}. Phân chia theo cụm dự án 80/20 cho ${n0(sp.train_items)} dòng hàng huấn luyện và ${n0(sp.test_items)} dòng hàng kiểm tra thuộc ${sp.test_projects} hồ sơ. Biến độc lập được chuẩn hóa Z-score trên tập huấn luyện.`));
 
 k.push(h3("4.2.1. Hệ số ước lượng và tỷ số chênh"));
 const cf=B12.bt2_coef;
@@ -100,16 +99,20 @@ const EXP={Price_Competitiveness:"+",Supplier_SQE_Score:"+",ATP_Stock_Available:
 k.push(mkTable(["Nhóm","Biến","Dấu kỳ vọng","Hệ số chuẩn hóa","Sai số chuẩn","p","OR (mỗi 1 SD)"],
   cf.map(r=>[r.nhom,VN[r.bien],EXP[r.bien],fs_(r.beta_z,4),f(r.SE,4),pv(r.p),f(r.OR_z,3)]),
   [1350,2600,900,1300,1100,1000,1000],cf.map((r,i)=>r.p<0.05?i:-1).filter(i=>i>=0)));
-k.push(cap("Bảng 4.6: Hệ số hồi quy logistic trên biến chuẩn hóa, nhãn đã đối soát; các dòng tô màu có ý nghĩa ở mức 5%"));
+k.push(cap("Bảng 4.6: Hệ số hồi quy logistic trên biến chuẩn hóa; các dòng tô màu có ý nghĩa ở mức 5%"));
 const g=b=>cf.find(r=>r.bien===b);
 const gPC=g("Price_Competitiveness"), gSQE=g("Supplier_SQE_Score"), gTAT=g("TAT_pred"), gQ=g("Pricing_Queue_Depth"), gCI=g("CompInt"),
       gEx=g("Is_Existing_Customer"), gATP=g("ATP_Stock_Available"), gPP=g("Has_PPAP_Cert"), gLoc=g("Local_Supplier"), gCC=g("CustClass"),
       gStr=g("Is_Strategic"), gPay=g("PayRisk"), gEng=g("Assigned_Engineer_Experience");
 const sig=cf.filter(r=>r.p<0.05), sigOK=sig.filter(r=>(EXP[r.bien]==="+")===(r.beta_z>0));
 k.push(p(`Biến giá có tác động mạnh nhất: một độ lệch chuẩn tăng của chỉ số cạnh tranh giá — tức chào rẻ hơn tương đối so với giá mục tiêu — có hệ số chuẩn hóa ${fs_(gPC.beta_z,4)} (p ${pv(gPC.p)}), tức nhân odds thắng với ${f(gPC.OR_z,2)}. Nhóm năng lực nhà cung cấp đứng thứ hai và có ý nghĩa ở cả bốn biến: điểm chất lượng (${fs_(gSQE.beta_z,4)}), tồn kho cam kết giao (${fs_(gATP.beta_z,4)}), chứng nhận PPAP (${fs_(gPP.beta_z,4)}) và nhà cung cấp trong nước (${fs_(gLoc.beta_z,4)}, p = ${f(gLoc.p,4)}). Nhóm quan hệ khách hàng có ý nghĩa ở khách hàng hiện hữu (${fs_(gEx.beta_z,4)}) và phân hạng khách hàng (${fs_(gCC.beta_z,4)}), trong khi biến khách hàng chiến lược không có ý nghĩa (p = ${f(gStr.p,3)}) sau khi đã kiểm soát hai biến kia.`));
-k.push(p([run("Phát hiện quan trọng trên bộ dữ liệu đã đối soát. ",{bold:true,color:C.RED}),
-  run(`Khác với bản nháp, cả cường độ cạnh tranh và nhóm năng lực xử lý đều mang dấu âm và có ý nghĩa thống kê ở mức 1%: cường độ cạnh tranh ${fs_(gCI.beta_z,4)} (p ${pv(gCI.p)}), độ sâu hàng đợi Pricing ${fs_(gQ.beta_z,4)} (p ${pv(gQ.p)}) và thời gian xử lý dự báo ${fs_(gTAT.beta_z,4)} (p = ${f(gTAT.p,4)}). Cả ba khớp dấu kỳ vọng đã đăng ký ở Bảng 3.4. Tổng cộng ${sig.length} trên 13 hệ số có ý nghĩa ở mức 5%, và ${sigOK.length === sig.length ? "toàn bộ" : sigOK.length+" trong số đó"} đúng dấu kỳ vọng. Kinh nghiệm kỹ sư (p = ${f(gEng.p,3)}) và rủi ro điều khoản thanh toán (p = ${f(gPay.p,3)}) không có ý nghĩa.`,{})]));
-k.push(p(`Về độ lớn, hai biến năng lực xử lý cộng lại tương đương một tác động đáng kể: một hồ sơ có hàng đợi sâu hơn một độ lệch chuẩn và thời gian dự báo dài hơn một độ lệch chuẩn có odds thắng nhân với ${f(gQ.OR_z*gTAT.OR_z,3)} — giảm khoảng ${f((1-gQ.OR_z*gTAT.OR_z)*100,0)}%. Trên nhãn đã đối soát, sự ứ đọng tại hàng đợi Pricing và thời gian phản hồi kéo dài đi kèm xác suất thắng thấp hơn một cách có hệ thống. Cần đọc đúng mức phát biểu: đây là liên hệ có điều kiện trong một mô hình quan sát, không phải hiệu ứng nhân quả đã nhận dạng; và như Mục 4.2.5 chỉ ra, ý nghĩa thống kê của nhóm biến này phụ thuộc vào phiên bản nhãn.`));
+k.push(p([run("Phát hiện quan trọng. ",{bold:true,color:C.RED}),
+  run(`Không chỉ nhóm giá, năng lực nhà cung cấp và quan hệ khách hàng có ý nghĩa thống kê đúng dấu kỳ vọng, mà cả cường độ cạnh tranh và nhóm năng lực xử lý cũng mang dấu âm và có ý nghĩa thống kê ở mức 1%: cường độ cạnh tranh ${fs_(gCI.beta_z,4)} (p ${pv(gCI.p)}), độ sâu hàng đợi Pricing ${fs_(gQ.beta_z,4)} (p ${pv(gQ.p)}) và thời gian xử lý dự báo ${fs_(gTAT.beta_z,4)} (p = ${f(gTAT.p,4)}). Cả ba khớp dấu kỳ vọng đã đăng ký ở Bảng 3.4. Tổng cộng ${sig.length} trên 13 hệ số có ý nghĩa ở mức 5%, và ${sigOK.length === sig.length ? "toàn bộ" : sigOK.length+" trong số đó"} đúng dấu kỳ vọng. Kinh nghiệm kỹ sư (p = ${f(gEng.p,3)}) và rủi ro điều khoản thanh toán (p = ${f(gPay.p,3)}) không có ý nghĩa.`,{})]));
+k.push(p(`Về độ lớn, hai biến năng lực xử lý cộng lại tương đương một tác động đáng kể: một hồ sơ có hàng đợi sâu hơn một độ lệch chuẩn và thời gian dự báo dài hơn một độ lệch chuẩn có odds thắng nhân với ${f(gQ.OR_z*gTAT.OR_z,3)} — giảm khoảng ${f((1-gQ.OR_z*gTAT.OR_z)*100,0)}%. Sự ứ đọng tại hàng đợi Pricing và thời gian phản hồi kéo dài đi kèm xác suất thắng thấp hơn một cách có hệ thống.`));
+k.push(p([run("Phát biểu đúng mức theo phương pháp luận kinh tế lượng. ",{bold:true,color:C.DRED}),
+  run(`Hệ số của độ sâu hàng đợi (β = ${fs_(gQ.beta_z,4)}, p ${pv(gQ.p)}) và của TAT dự báo (β = ${fs_(gTAT.beta_z,4)}, p = ${f(gTAT.p,4)}) là mối liên hệ có điều kiện trên dữ liệu quan sát (conditional association in observational data), chưa phải hiệu ứng nhân quả đã nhận dạng. Nguồn nội sinh (endogeneity) chính là độ phức tạp không quan sát được của hồ sơ: một hồ sơ khó có thể đồng thời chờ lâu hơn tại Pricing và khó thắng hơn vì những lý do không nằm trong mô hình, khiến hệ số ước lượng gộp cả hai kênh. Mô hình đã kiểm soát các thành phần quan sát được của độ phức tạp — số cấp phê duyệt, số lần làm rõ bản vẽ thông qua TAT dự báo — nhưng không loại trừ được phần không quan sát được.`,{})]));
+k.push(p([run("Kiểm tra độ vững theo trạng thái đơn hàng. ",{bold:true}),
+  run(`Biến kết quả được chốt theo trạng thái đơn hàng cuối kỳ, sau bước đối soát trạng thái; bước này làm thay đổi kết quả của ${n0(RB.n_changed)} trên ${n0(n2.items)} dòng hàng trong mẫu (${f(RB.pct_changed,1)}%), tập trung ở các hồ sơ có hàng đợi sâu (độ sâu trung bình ${f(RB.Q_mean_changed,1)} so với ${f(RB.Q_mean_unchanged,1)}). Ước lượng lại cùng đặc tả trên trạng thái trước đối soát cho các nhóm giá, năng lực nhà cung cấp và quan hệ khách hàng không đổi về dấu và ý nghĩa, nhưng hệ số hàng đợi (${fs_(RB.coef_pre.Pricing_Queue_Depth.beta_z,4)}; p = ${f(RB.coef_pre.Pricing_Queue_Depth.p,3)}) và TAT dự báo (${fs_(RB.coef_pre.TAT_pred.beta_z,4)}; p = ${f(RB.coef_pre.TAT_pred.p,3)}) không còn ý nghĩa ở mức 5%. Kết luận về kênh thời gian phản hồi vì vậy nhạy với cách chốt biến kết quả, và đây là lý do thứ hai — bên cạnh nội sinh — để nghiên cứu mô phỏng ở Mục 4.4.4 quét hệ số nhân k ∈ {0,0; 0,5; 1,0; 1,5; 2,0; 3,0} cho |β_TAT| và |β_Queue|, bao gồm cả trường hợp cực đoan k = 0,0 khi khách hàng hoàn toàn không phạt phản hồi chậm.`,{})]));
 
 k.push(h3("4.2.2. Chỉ số đánh giá và hiệu chuẩn"));
 k.push(mkTable(["Chỉ số","Tập huấn luyện","Tập kiểm tra (tách theo dự án)"],
@@ -120,7 +123,7 @@ k.push(mkTable(["Chỉ số","Tập huấn luyện","Tập kiểm tra (tách the
   [2600,2600,3800],[4,5]));
 k.push(cap("Bảng 4.7: Chỉ số đánh giá mô hình BT2; khoảng tin cậy AUC từ 1.000 lần bootstrap"));
 const cb=B12.bt2_calib;
-k.push(p(`AUC ngoài mẫu ${f(m2.AUC_test,4)} không thấp hơn AUC nội mẫu ${f(m2.AUC_train,4)}, cho thấy mô hình không quá khớp; so với bản nháp (AUC ${f(LS.AUC_test_v1,4)} trên nhãn trước đối soát), năng lực phân biệt gần như không đổi. Về hiệu chuẩn ở mức tổng hợp, mô hình dự báo ${f(cb.expected_wins_test,1)} dòng hàng thắng trên tập kiểm tra so với ${cb.actual_wins_test} thực tế — dự báo cao hơn ${f(cb.deviation_pct,2)}%. Đường cong hiệu chuẩn ở Hình 4.4A bám gần đường chéo ở dải xác suất trung bình và hơi lệch ở hai đầu. Mức lệch này đủ nhỏ để dùng mô hình cho bài toán tối ưu giá, nhưng cần được ghi nhận: mọi lợi nhuận kỳ vọng tính từ mô hình có xu hướng lạc quan nhẹ.`));
+k.push(p(`AUC ngoài mẫu ${f(m2.AUC_test,4)} không thấp hơn AUC nội mẫu ${f(m2.AUC_train,4)}, cho thấy mô hình không quá khớp. Về hiệu chuẩn ở mức tổng hợp, mô hình dự báo ${f(cb.expected_wins_test,1)} dòng hàng thắng trên tập kiểm tra so với ${cb.actual_wins_test} thực tế — dự báo cao hơn ${f(cb.deviation_pct,2)}%. Đường cong hiệu chuẩn ở Hình 4.4A bám gần đường chéo ở dải xác suất trung bình và hơi lệch ở hai đầu. Mức lệch này đủ nhỏ để dùng mô hình cho bài toán tối ưu giá, nhưng cần được ghi nhận: mọi lợi nhuận kỳ vọng tính từ mô hình có xu hướng lạc quan nhẹ.`));
 k.push(img("FIG_4_4_Calibration_ROC.png",620,0.382));
 k.push(cap("Hình 4.4: (A) Đường cong hiệu chuẩn trên tập kiểm tra; (B) đường cong ROC ngoài mẫu"));
 const xg=B12.bt2_xgb;
@@ -134,7 +137,7 @@ k.push(mkTable(["Nhóm biến bị loại","AUC còn lại","Thay đổi AUC","D
   [2200,1600,1600,3600],[0,1]));
 k.push(cap("Bảng 4.8: Ablation theo nhóm biến — mức giảm AUC khi loại từng nhóm khỏi mô hình"));
 k.push(p(`Hai nhóm quyết định năng lực phân biệt là giá và năng lực nhà cung cấp, với mức giảm AUC lần lượt ${f(Math.abs(AB("Giá").delta_AUC),4)} và ${f(Math.abs(AB("Năng lực NCC").delta_AUC),4)} khi bị loại. Ngay cả khi loại toàn bộ biến giá, mô hình vẫn đạt AUC ${f(AB("Giá").AUC_test,4)} — cao hơn nhiều so với ngưỡng ngẫu nhiên 0,5. Các yếu tố phi giá tự chúng đã dự báo được kết quả thắng thua ở mức có ý nghĩa thực tiễn. Đây là bằng chứng định lượng cho giới hạn về cạnh tranh không thuần giá đã khai báo ở mục 1.6, và là một trong ba trụ cột biện luận ở Chương 5.`));
-k.push(p(`Trên nhãn đã đối soát, nhóm năng lực xử lý chuyển thành nhóm có đóng góp vừa: loại nhóm này làm AUC thay đổi ${(AB("Năng lực xử lý").delta_AUC>=0?"+":"")+f(AB("Năng lực xử lý").delta_AUC,4)}, ngang với nhóm quan hệ khách hàng (${f(AB("Quan hệ KH").delta_AUC,4)}). Nhóm cạnh tranh có hệ số ý nghĩa nhưng đóng góp phân biệt nhỏ (${f(AB("Cạnh tranh").delta_AUC,4)}) vì thông tin của nó trùng lặp một phần với giá. Rủi ro thương mại không đóng góp. Như vậy dữ liệu đã đối soát cho thấy khách hàng có phạt phản hồi chậm — một phát hiện có hệ quả trực tiếp cho thiết kế cơ chế điều phối ở Mục 4.4.`));
+k.push(p(`Nhóm năng lực xử lý có đóng góp vừa: loại nhóm này làm AUC thay đổi ${(AB("Năng lực xử lý").delta_AUC>=0?"+":"")+f(AB("Năng lực xử lý").delta_AUC,4)}, ngang với nhóm quan hệ khách hàng (${f(AB("Quan hệ KH").delta_AUC,4)}). Nhóm cạnh tranh có hệ số ý nghĩa nhưng đóng góp phân biệt nhỏ (${f(AB("Cạnh tranh").delta_AUC,4)}) vì thông tin của nó trùng lặp một phần với giá. Rủi ro thương mại không đóng góp. Như vậy, trên dữ liệu quan sát, phản hồi chậm đi kèm xác suất thắng thấp hơn — một liên hệ có hệ quả trực tiếp cho thiết kế cơ chế điều phối ở Mục 4.4.`));
 
 k.push(h3("4.2.4. Lựa chọn biến giá"));
 const pvr=B12.bt2_price_var;
@@ -144,18 +147,6 @@ k.push(mkTable(["Biến giá","Hệ số chuẩn hóa","p","AUC ngoài mẫu"],
   [3800,1700,1500,2000],[1]));
 k.push(cap("Bảng 4.9: Hai ứng viên biến giá — chỉ chỉ số cạnh tranh giá mang thông tin"));
 k.push(p(`Hệ số markup hoàn toàn không có ý nghĩa thống kê (p = ${f(pvr.Markup_Pct.p,3)}) và mô hình dùng nó chỉ đạt AUC ${f(pvr.Markup_Pct.AUC_test,4)}, ngang với mô hình không có biến giá (${f(AB("Giá").AUC_test,4)}). Điều này nhất quán với phát hiện ở mục 1.2.2: hệ số markup gần như không biến động và không phản ứng với cạnh tranh, nên nó không mang thông tin về khả năng thắng. Chỉ số cạnh tranh giá, đo tương quan giữa giá chào và giá mục tiêu của khách hàng, mới là tín hiệu giá thực sự. Kết luận này quyết định cách xây dựng hàm xác suất thắng theo giá ở BT3.`));
-
-k.push(h3("4.2.5. Độ nhạy theo phiên bản nhãn"));
-const v1=LS.coef_v1;
-k.push(p(`Vì ${n0(LS.n_changed)} dòng hàng trong mẫu BT2 đổi nhãn giữa bản nháp và bản đối soát (${LS.n_1to0} thắng → thua, ${LS.n_0to1} thua → thắng), và các thay đổi này tập trung theo độ sâu hàng đợi (Mục 3.1.2), mô hình được ước lượng lại trên nhãn trước đối soát với cùng đặc tả, cùng phân chia và cùng chuẩn hóa. Kết quả đầy đủ ở Bảng B.4; ba biến nhạy cảm được tóm tắt dưới đây.`));
-k.push(fx([
-`Cường độ cạnh tranh:  v1 ${fs_(v1.CompInt.beta_z,4)} (p = ${f(v1.CompInt.p,4)})   →   v3 ${fs_(gCI.beta_z,4)} (p ${pv(gCI.p)})`,
-`Độ sâu hàng đợi Pricing:  v1 ${fs_(v1.Pricing_Queue_Depth.beta_z,4)} (p = ${f(v1.Pricing_Queue_Depth.p,4)})   →   v3 ${fs_(gQ.beta_z,4)} (p ${pv(gQ.p)})`,
-`TAT dự báo (OOF):  v1 ${fs_(v1.TAT_pred.beta_z,4)} (p = ${f(v1.TAT_pred.p,4)})   →   v3 ${fs_(gTAT.beta_z,4)} (p = ${f(gTAT.p,4)})`,
-`Chỉ số cạnh tranh giá:  v1 ${fs_(v1.Price_Competitiveness.beta_z,4)} (p < 0,0001)   →   v3 ${fs_(gPC.beta_z,4)} (p < 0,0001)`,
-`AUC ngoài mẫu:  v1 ${f(LS.AUC_test_v1,4)}   →   v3 ${f(m2.AUC_test,4)}`]));
-k.push(p([run("Đọc kết quả độ nhạy. ",{bold:true,color:C.DRED}),
-  run(`Nhóm giá, năng lực nhà cung cấp và quan hệ khách hàng ổn định về dấu và ý nghĩa giữa hai phiên bản nhãn. Ngược lại, kết luận về cường độ cạnh tranh và nhóm năng lực xử lý phụ thuộc hoàn toàn vào việc đối soát: trên nhãn trước đối soát, hai biến hàng đợi và thời gian không có ý nghĩa ở mức 5% và TAT dự báo còn mang dấu dương. Nói cách khác, khoảng ${f(LS.n_changed/n2.items*100,1)}% số dòng hàng đổi nhãn đủ để đảo kết luận về kênh thời gian phản hồi. Luận văn vì vậy sử dụng nhãn đã đối soát làm cấu hình chính — vì đó là dữ liệu kết quả cuối kỳ — nhưng mọi suy luận dựa trên β_Queue và β_TAT (Mục 4.4, Chương 5) đều được phát biểu có điều kiện trên tính hợp lệ của quy trình đối soát, và mặt phẳng chuyển pha ở Mục 4.4.4 quét cả trường hợp k = 0, tức thế giới mà khách hàng không phạt phản hồi chậm.`,{})]));
 
 /* ══════════════ 4.3 BT3 ══════════════ */
 k.push(h2("4.3. Bài toán 3 — Tối ưu giá báo thầu"));
@@ -171,17 +162,17 @@ k.push(cap("Bảng 4.10: Nghiệm từ điều kiện bậc nhất khớp với 
 k.push(p(`Sai lệch tối đa giữa hai cách giải là ${f(Math.max(...fc.map(r=>r.lech)),4)} USD, ở mức sai số làm tròn của lưới. Đạo hàm bậc hai của hàm mục tiêu đổi dấu trên miền giá khảo sát, từ ${f(FOC.phi_tuyen.max_d2,4)} xuống ${f(FOC.phi_tuyen.min_d2,4)}: hàm lồi ở vùng giá thấp và lõm quanh cực đại. Hàm mục tiêu là phi tuyến theo giá, nghiệm tìm được là cực đại nội suy duy nhất trên miền, và việc dò lưới cho kết quả đúng. Trên toàn bộ ${n0(n2.items)} dòng hàng, nghiệm tối ưu không ràng buộc có markup trung vị ${f(B3.foc_full.median_mk,4)} và không dòng nào rơi vào biên của miền tìm kiếm.`));
 
 k.push(h3("4.3.2. Số đối thủ hiệu dụng và ba đặc tả miền chi phí"));
-const NC=B3.N_calib, EN=DA.EffN.crosstab;
+const NC=B3.N_calib, EN=S1.du_lieu.EffN_by_intensity;
 const hiN=(4*EN.High["4"]+5*EN.High["5"])/(EN.High["4"]+EN.High["5"]);
 k.push(mkTable(["Phương pháp","Cạnh tranh thấp","Trung bình","Cao","Ghi chú"],
   [["Mô-men trên mức markup",f(NC.MoM["1"],2),f(NC.MoM["2"],2),f(NC.MoM["3"],2),"Không phân biệt được ba tầng"],
    ["Nghịch đảo tỷ lệ thắng",f(NC["1/WinRate"]["1"],2),f(NC["1/WinRate"]["2"],2),f(NC["1/WinRate"]["3"],2),"Tầng thấp dưới 2 — phi lý với đấu thầu"],
    ["Ánh xạ chuyên gia","2","4","6","Không dựa trên dữ liệu"],
    ["Lai (hình dạng từ tỷ lệ thắng, neo tại 2)",f(NC.Lai["1"],2),f(NC.Lai["2"],2),f(NC.Lai["3"],2),"Dùng cho đặc tả A và B"],
-   ["Số đối thủ thực tế từ CRM (bản v3)","2,00","3,00",f(hiN,2)+" (4 hoặc 5)","Dùng cho đặc tả C; ánh xạ một-một ở hai tầng dưới"]],
+   ["Số đối thủ thực tế từ CRM","2,00","3,00",f(hiN,2)+" (4 hoặc 5)","Dùng cho đặc tả C; ánh xạ một-một ở hai tầng dưới"]],
   [3000,1300,1200,1300,2200],[4]));
 k.push(cap("Bảng 4.11: Số đối thủ hiệu dụng theo năm nguồn — bốn phương pháp hiệu chỉnh và số đối thủ thực tế từ CRM"));
-k.push(p(`Bốn phương pháp hiệu chỉnh cho giá trị trải từ ${f(NC["1/WinRate"]["1"],2)} đến ${f(NC.MoM["1"],2)} cho cùng bộ dữ liệu; sự phân tán này cho thấy N không được nhận dạng từ dữ liệu giá và kết quả. Bản v3 bổ sung số đối thủ thực tế ghi nhận từ CRM. Trường này trùng với cận dưới hợp lý ở tầng thấp (2) và gần phương pháp lai ở tầng trung bình, nhưng ở tầng cao cho trung bình ${f(hiN,2)}, cao hơn phương pháp lai (${f(NC.Lai["3"],2)}).`));
+k.push(p(`Bốn phương pháp hiệu chỉnh cho giá trị trải từ ${f(NC["1/WinRate"]["1"],2)} đến ${f(NC.MoM["1"],2)} cho cùng bộ dữ liệu; sự phân tán này cho thấy N không được nhận dạng từ dữ liệu giá và kết quả. Bộ dữ liệu còn chứa số đối thủ thực tế ghi nhận từ CRM. Trường này trùng với cận dưới hợp lý ở tầng thấp (2) và gần phương pháp lai ở tầng trung bình, nhưng ở tầng cao cho trung bình ${f(hiN,2)}, cao hơn phương pháp lai (${f(NC.Lai["3"],2)}).`));
 k.push(p("Ba đặc tả miền chi phí được hiệu chỉnh như sau:"));
 const ncC=B3.nashC;
 k.push(fx([
@@ -258,7 +249,7 @@ const pl=B3.placebo, SB=B3.static_breach;
 k.push(p(`Chính sách CBPO có xét năng lực — cộng giá bóng λ(Q) vào giá vốn trước khi tối ưu — cho uplift ${fp(pl.cap_uplift,2)}, cao hơn CBPO không xét năng lực (${fp(cbp.uplift_pct,2)}). Nếu dừng ở đây, kết luận sẽ là thành phần năng lực tạo thêm ${f(pl.cap_uplift-cbp.uplift_pct,2)} điểm phần trăm lợi nhuận. Nhánh giả dược thay λ(Q) bằng hằng số ${f(la.lam_item_mean_test,2)} USD — đúng giá trị trung bình của λ(Q) trên tập kiểm tra — và cho ${fp(pl.placebo_uplift,2)}. Chênh lệch giữa chính sách động và giả dược là ${fs_(pl.dong_gop_dieu_tiet_pp,2)} điểm phần trăm.`));
 k.push(p(`Phiên bản có trọng số nhạy cảm cam kết cho kết quả cùng dạng: CBPO + λ(Q)·U đạt ${fp(pl.capU_uplift,2)}, nhánh giả dược tương ứng đạt ${fp(pl.placeboU_uplift,2)}, chênh lệch ${fs_(pl.dong_gop_dieu_tiet_U_pp,2)} điểm phần trăm. Ở cả hai phiên bản, toàn bộ mức tăng so với CBPO đến từ việc nâng mặt bằng giá lên một lượng cố định; phần điều tiết theo trạng thái hàng đợi không đóng góp dương.`));
 k.push(p([run("Kết luận kiểm định trên dữ liệu tĩnh: hệ quả của H2 ở dạng tín hiệu giá bị bác bỏ. ",{bold:true}),
-  run(`Kết luận này cần được đặt đúng phạm vi. Trong đánh giá tĩnh một kỳ, quyết định giá được đưa ra SAU khi hồ sơ đã nằm trong hàng đợi, và không có vòng phản hồi giải phóng hàng đợi cho hồ sơ đến sau. Hệ quả là tỷ lệ vi phạm cam kết trên tập kiểm tra bằng đúng ${pct(SB.breach_rate_test,2)} dưới MỌI chính sách giá: không chính sách nào trong Bảng 4.13 chạm được vào chỉ tiêu thứ hai của hàm mục tiêu hai chiều đã đăng ký ở mục 3.6. Đánh giá tĩnh vì vậy tính đủ chi phí của thành phần năng lực nhưng không thể tính lợi ích của nó. Đồng thời, BT2 trên nhãn đã đối soát cho thấy hàng đợi và thời gian phản hồi có liên hệ âm với xác suất thắng — tức nếu một cơ chế rút ngắn được thời gian chờ thì lợi ích đó có kênh để chuyển thành lợi nhuận. Hai điểm này là lý do Mục 4.4 xây dựng nghiên cứu mô phỏng liên kỳ.`,{})]));
+  run(`Kết luận này cần được đặt đúng phạm vi. Trong đánh giá tĩnh một kỳ, quyết định giá được đưa ra SAU khi hồ sơ đã nằm trong hàng đợi, và không có vòng phản hồi giải phóng hàng đợi cho hồ sơ đến sau. Hệ quả là tỷ lệ vi phạm cam kết trên tập kiểm tra bằng đúng ${pct(SB.breach_rate_test,2)} dưới MỌI chính sách giá: không chính sách nào trong Bảng 4.13 chạm được vào chỉ tiêu thứ hai của hàm mục tiêu hai chiều đã đăng ký ở mục 3.6. Đánh giá tĩnh vì vậy tính đủ chi phí của thành phần năng lực nhưng không thể tính lợi ích của nó. Đồng thời, BT2 cho thấy hàng đợi và thời gian phản hồi có liên hệ âm với xác suất thắng trên dữ liệu quan sát — tức nếu một cơ chế rút ngắn được thời gian chờ thì lợi ích đó có kênh để chuyển thành lợi nhuận. Hai điểm này là lý do Mục 4.4 xây dựng nghiên cứu mô phỏng liên kỳ.`,{})]));
 
 k.push(h3("4.3.7. Phân tích độ nhạy"));
 const S=B3.sensitivity;
@@ -289,14 +280,14 @@ const SIM=J("ch4_sim.json"); const SM=SIM.main.C1["1.0"], SM2=SIM.main.C2["1.0"]
 k.push(h2("4.5. Tổng hợp kết quả ba bài toán và nghiên cứu mô phỏng"));
 k.push(mkTable(["Bài toán","Câu hỏi nghiên cứu","Kết quả chính","Trạng thái"],
   [["BT1","Biến động thời gian phân bố thế nào giữa bốn khâu?",`Không đồng nhất; Sales biến động tương đối cao nhất; ${f(pr["hiep_phuong_sai_%"],1)}% phương sai tổng là hiệp phương sai; Pricing độc lập với Sales. Log-transform bị bác bỏ; chọn thang gốc + HC3; xuất TAT_pred OOF`,"Trả lời được"],
-   ["BT2","Yếu tố nào quyết định xác suất thắng?",`AUC ngoài mẫu ${f(m2.AUC_test,3)}; giá, năng lực NCC, quan hệ KH chi phối; trên nhãn đối soát, cạnh tranh (${fs_(gCI.beta_z,3)}), hàng đợi (${fs_(gQ.beta_z,3)}) và TAT_pred (${fs_(gTAT.beta_z,3)}) âm, có ý nghĩa 1% — nhạy với phiên bản nhãn`,"Trả lời được, có điều kiện"],
+   ["BT2","Yếu tố nào quyết định xác suất thắng?",`AUC ngoài mẫu ${f(m2.AUC_test,3)}; giá, năng lực NCC, quan hệ KH chi phối; cạnh tranh (${fs_(gCI.beta_z,3)}), hàng đợi (${fs_(gQ.beta_z,3)}) và TAT_pred (${fs_(gTAT.beta_z,3)}) âm, có ý nghĩa 1% — liên hệ có điều kiện, chưa nhận dạng nhân quả`,"Trả lời được (liên hệ có điều kiện)"],
    ["BT3 — H1","Giá cân bằng có tốt hơn best-response?",`Lịch sử: b = ${fs_(HE.lich_su_lnMarkup.slope,4)} (cost-plus). FOC: b = ${fs_(HE.FOC_lnMargin.slope,3)}. A, B kẹp ${pct(nA.clip,0)} / ${pct(nB.clip,0)}; C kẹp ${pct(nCc.clip,0)}, uplift ${fp(nCc.uplift_pct,1)} < CBPO`,"Bác bỏ (C phục hồi tính nội suy)"],
    ["BT3 — H2 tĩnh","Giá bóng làm tín hiệu giá có tạo giá trị?",`Giả dược: λ(Q) ${fs_(pl.dong_gop_dieu_tiet_pp,2)} pp; λ(Q)·U ${fs_(pl.dong_gop_dieu_tiet_U_pp,2)} pp; vi phạm SLA không đổi`,"Bác bỏ"],
    ["Mục 4.4 — H2 liên kỳ","Giá bóng làm tiêu chí phân luồng có tạo giá trị?",`P4 − P3: ${fs_(SM.compare.P4_vs_P3.mean_pp,2)} pp (C1), ${fs_(SM2.compare.P4_vs_P3.mean_pp,2)} pp (C2); vi phạm ${pct(SM.policies[POL[0]].breach,1)} → ${pct(SM.policies[POL[3]].breach,1)} (C1), ${pct(SM2.policies[POL[3]].breach,1)} (C2); giá trị đến từ phân luồng, không từ λ trong giá`,"Ủng hộ có điều kiện (mô phỏng)"],
    ["BT3 — CBPO","Mức giá tối ưu theo xác suất thắng?",`${fp(cbp.uplift_pct,2)} kỳ vọng, bền vững qua mọi độ nhạy; cần A/B để xác nhận`,"Kết quả dương bền vững nhất"]],
   [1250,2300,4150,1300],[4,5]));
 k.push(cap("Bảng 4.21: Tổng hợp kết quả và trạng thái của ba bài toán và nghiên cứu mô phỏng"));
-k.push(p("Các kết quả không rời rạc mà khớp vào nhau. BT1 cho thấy hàng đợi Pricing vận hành độc lập với đầu chuỗi và là nút thắt thời gian; BT2 trên nhãn đã đối soát cho thấy hàng đợi và thời gian phản hồi đi kèm xác suất thắng thấp hơn; BT3 cho thấy giá bóng gắn vào giá chào không tạo giá trị vì giá được quyết định sau khi việc đã phát sinh; và mô phỏng liên kỳ cho thấy cùng một giá bóng, khi dùng để quyết định THỨ TỰ xử lý tại pha Sales-WBS, tạo ra giá trị vượt nhánh nâng giá đồng loạt. Kết luận hợp nhất: giá chào là đòn bẩy cho biên lợi nhuận, còn điều phối tiếp nhận là đòn bẩy cho năng lực — và hai đòn bẩy cần được đồng bộ chứ không thay thế cho nhau. Chương 5 biện luận nguyên nhân."));
+k.push(p("Các kết quả không rời rạc mà khớp vào nhau. BT1 cho thấy hàng đợi Pricing vận hành độc lập với đầu chuỗi và là nút thắt thời gian; BT2 cho thấy hàng đợi và thời gian phản hồi đi kèm xác suất thắng thấp hơn trên dữ liệu quan sát; BT3 cho thấy giá bóng gắn vào giá chào không tạo giá trị vì giá được quyết định sau khi việc đã phát sinh; và mô phỏng liên kỳ cho thấy cùng một giá bóng, khi dùng để quyết định THỨ TỰ xử lý tại pha Sales-WBS, tạo ra giá trị vượt nhánh nâng giá đồng loạt. Kết luận hợp nhất: giá chào là đòn bẩy cho biên lợi nhuận, còn điều phối tiếp nhận là đòn bẩy cho năng lực — và hai đòn bẩy cần được đồng bộ chứ không thay thế cho nhau. Chương 5 biện luận nguyên nhân."));
 
 /* ══════════════ 4.6 A/B ══════════════ */
 k.push(h2("4.6. Tham số thiết kế thực nghiệm kiểm chứng"));

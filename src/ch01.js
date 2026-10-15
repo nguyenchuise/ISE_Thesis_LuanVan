@@ -2,7 +2,7 @@
 module.exports=function(L){
 const {C,run,p,h1,h2,h3,cap,center,mkTable,fn,img}=L;
 const fs=require("fs"); const J=f=>JSON.parse(fs.readFileSync(f,"utf8"));
-const S=J("ch1_stats.json"), DA=J("data_audit.json");
+const S=J("ch1_stats.json");
 const f=(x,d=2)=>Number(x).toFixed(d).replace(".",",").replace(/^-/,"−");
 const pct=(x,d=2)=>f(x*100,d)+"%";
 const n0=(x)=>Number(x).toLocaleString("de-DE");
@@ -33,7 +33,7 @@ k.push(mkTable(
     ["Nhịp độ tiếp nhận",`${f(Q.du_an_moi_thang,1)} hồ sơ / tháng`,"Tải công việc ổn định, có thể dự báo"],
     ["Tần suất quyết định giá",`${f(TS.quyet_dinh_gia_moi_ngay_lam_viec,1)} quyết định / ngày làm việc`,"Vượt xa khả năng cân nhắc kỹ lưỡng thủ công"],
     ["Biên lợi nhuận trung bình mỗi mặt hàng",`${f(S.gia_tri.bien_lo_i_nhuan_tb_moi_mat_hang_USD,2)} USD`,"Giá trị mỗi quyết định nhỏ, nhưng tổng tích lũy lớn"],
-    ["Tỷ lệ thắng cấp dòng hàng",pct(S.gia_tri.ty_le_thang_mat_hang,2),"Đã đối soát trạng thái đơn hàng cuối kỳ (bản dữ liệu v3)"],
+    ["Tỷ lệ thắng cấp dòng hàng",pct(S.gia_tri.ty_le_thang_mat_hang,2),"Theo trạng thái đơn hàng cuối kỳ"],
   ],[3100,2200,3700]));
 k.push(cap("Bảng 1.1: Quy mô và nhịp độ của quyết định định giá trong kỳ quan sát"));
 k.push(p(`Cấu trúc này — tần suất cao, giá trị mỗi quyết định nhỏ, tổng tích lũy lớn — chính là dạng bài toán mà hệ thống hỗ trợ ra quyết định dựa trên dữ liệu tạo ra giá trị lớn nhất. Một cải thiện nhỏ trên mỗi quyết định, nhân với ${n0(Q.mat_hang)} quyết định trong kỳ ${Q.ky_quan_sat_ngay} ngày — tương đương khoảng ${n0(Math.round(Q.mat_hang/Q.ky_quan_sat_ngay*365/100)*100)} quyết định mỗi năm — trở thành khác biệt đáng kể ở cấp doanh nghiệp. Ngược lại, chính tần suất này khiến việc cân nhắc thủ công từng trường hợp là bất khả thi trên thực tế.`));
@@ -49,7 +49,7 @@ k.push(mkTable(
     ["Biên độ chênh lệch","—",`${f(gapM,2)} điểm phần trăm`,`${f(gapW,2)} điểm phần trăm`],
   ],[2400,1700,2600,2300],[3]));
 k.push(cap("Bảng 1.2: Hệ số markup gần như bất động trong khi tỷ lệ thắng biến thiên mạnh theo cạnh tranh"));
-k.push(p(`Đọc dòng cuối của bảng: khi chuyển từ nhóm cạnh tranh thấp sang nhóm cạnh tranh cao, tỷ lệ thắng giảm ${f(gapW,2)} điểm phần trăm, trong khi hệ số markup chỉ thay đổi ${f(gapM,2)} điểm phần trăm. Nói cách khác, biến động của kết quả lớn gấp khoảng ${Math.round(gapW/gapM/10)*10} lần biến động của biến quyết định. Toàn bộ hệ số markup của doanh nghiệp nằm trong một dải rất hẹp, với hệ số biến thiên chỉ ${f(MK.cv*100,2)}% quanh giá trị trung bình ${f(MK.mean,4)}. Số liệu trên dùng bản dữ liệu đã đối soát trạng thái đơn hàng cuối kỳ; trên bản nháp trước đối soát, chênh lệch tỷ lệ thắng là 18,93 điểm phần trăm — kết luận định tính không đổi.`));
+k.push(p(`Đọc dòng cuối của bảng: khi chuyển từ nhóm cạnh tranh thấp sang nhóm cạnh tranh cao, tỷ lệ thắng giảm ${f(gapW,2)} điểm phần trăm, trong khi hệ số markup chỉ thay đổi ${f(gapM,2)} điểm phần trăm. Nói cách khác, biến động của kết quả lớn gấp khoảng ${Math.round(gapW/gapM/10)*10} lần biến động của biến quyết định. Toàn bộ hệ số markup của doanh nghiệp nằm trong một dải rất hẹp, với hệ số biến thiên chỉ ${f(MK.cv*100,2)}% quanh giá trị trung bình ${f(MK.mean,4)}.`));
 k.push(p("Hiện tượng này dẫn tới hai khả năng, và cả hai đều đáng được nghiên cứu. Khả năng thứ nhất là doanh nghiệp đang bỏ lại biên lợi nhuận trên bàn ở những cơ hội ít cạnh tranh, nơi khách hàng sẵn sàng chấp nhận mức giá cao hơn. Khả năng thứ hai là doanh nghiệp đang mất những cơ hội có thể thắng ở nhóm cạnh tranh cao, nơi một mức giảm giá nhỏ đủ để đảo chiều kết quả. Việc phân định hai khả năng này bằng dữ liệu là một trong những mục tiêu của luận văn."));
 
 k.push(img("FIG_1_2_Markup_vs_WinRate.png",520,0.4752));
@@ -109,8 +109,8 @@ k.push(p([run("Thứ hai, cạnh tranh không thuần giá. ",{bold:true}),
   run("Quyết định mua của khách hàng chịu ảnh hưởng của các yếu tố phi giá như điểm chất lượng nhà cung cấp, tình trạng tồn kho cam kết giao, chứng nhận phê duyệt mặt hàng và quan hệ khách hàng hiện hữu. Luận văn mô hình hóa các yếu tố này như biến điều kiện, không mô hình hóa hàm điểm của khách hàng.",{})]));
 k.push(p([run("Thứ ba, dữ liệu đã qua xử lý bảo mật. ",{bold:true}),
   run("Bộ dữ liệu đã trải qua bước chuẩn hóa và ẩn danh hóa theo yêu cầu bảo mật của doanh nghiệp. Do đó các kết luận định tính — thứ tự các khâu, dấu của hệ số, cấu trúc biến động — bền vững hơn từng con số tuyệt đối cụ thể. Mọi phát biểu định lượng trong luận văn được hiểu trong phạm vi bộ dữ liệu này.",{})]));
-k.push(p([run("Thứ tư, phiên bản dữ liệu. ",{bold:true}),
-  run(`Luận văn sử dụng bản trích xuất lại từ ERP (bản v3), bổ sung ba trường liên kết từ phân hệ CRM/Sourcing — số đối thủ thực tế, độ nhạy cam kết thời gian, và cận trên giá dự trữ cấp dòng hàng — cùng trạng thái thắng/thua đã đối soát cuối kỳ. So với bản nháp trước, ${DA.labels.n_changed} trên ${n0(Q.mat_hang)} nhãn thắng/thua (${f(DA.labels.pct_changed,2)}%) được điều chỉnh. Mục 3.1.2 mô tả chi tiết các thay đổi; mọi kết luận nhạy cảm với phiên bản nhãn được báo cáo kèm phân tích độ nhạy ở Mục 4.2.5.`,{})]));
+k.push(p([run("Thứ tư, dữ liệu liên kết đa phân hệ. ",{bold:true}),
+  run("Ngoài các trường ERP, bộ dữ liệu chứa ba trường liên kết từ phân hệ CRM và Sourcing — số đối thủ thực tế của cơ hội, chỉ số nhạy cảm cam kết thời gian, và cận trên giá dự trữ cấp dòng hàng — cùng trạng thái thắng/thua theo trạng thái đơn hàng cuối kỳ. Định nghĩa và cách dùng từng trường được trình bày ở Mục 3.1.",{})]));
 k.push(p("Về phạm vi không gian và thời gian, nghiên cứu dựa trên một doanh nghiệp, một thị trường, kỳ quan sát 299 ngày. Phần mô phỏng ở Mục 4.4 là mô phỏng phản thực dựa trên mô hình, không phải dữ liệu quan sát. Việc khái quát hóa sang doanh nghiệp khác cần được kiểm tra lại bằng chính bộ tiêu chí chẩn đoán mà luận văn đề xuất."));
 
 k.push(h2("1.7. Đóng góp kỳ vọng"));
