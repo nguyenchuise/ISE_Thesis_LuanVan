@@ -1,0 +1,9 @@
+node_modules/
+__pycache__/
+*.pyc
+# Ket qua sinh ra boi src/run_all.sh (tai lap bang cach chay lai)
+src/*.json
+!src/package.json
+!src/package-lock.json
+src/FIG_*.png
+src/ChuThaiNguyen_LuanVan_*.docx
