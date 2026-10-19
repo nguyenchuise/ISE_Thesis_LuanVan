@@ -200,7 +200,7 @@ k.push(p("Vì vậy luận văn tổ chức công việc theo hai trục chồng
 k.push(h2("2.4. Định vị nghiên cứu và phát biểu khoảng trống"));
 k.push(p("Bảng dưới đây định vị luận văn trên hai chiều: mức độ nội sinh hóa hành vi đối thủ và mức độ xử lý ràng buộc năng lực. Mỗi ô ghi công trình đại diện và điều kiện dữ liệu mà nó đòi hỏi."));
 k.push(mkTable(
-  ["","Không xét ràng buộc năng lực","Có xét ràng buộc năng lực"],
+  ["Chiều nội sinh hóa cạnh tranh \\ Ràng buộc năng lực","Không xét ràng buộc năng lực","Có xét ràng buộc năng lực"],
   [
     ["Hành vi đối thủ ngoại sinh","Friedman (1956) — best-response trên xác suất thắng ước lượng từ lịch sử.\nĐiều kiện: chỉ cần dữ liệu thắng/thua của chính doanh nghiệp.\n→ NỀN TẢNG KẾ THỪA","Gallego & van Ryzin (1994); Talluri & van Ryzin (2004) — định giá và tiếp nhận có xét giá trị cận biên của năng lực.\nĐiều kiện: đo được năng lực và chi phí tắc nghẽn.\n→ TRỤC GIẢ THUYẾT H2"],
     ["Hành vi đối thủ nội sinh","Krishna (2009) — nghiệm cân bằng dạng đóng.\nĐiều kiện: biết phân phối chi phí và số đối thủ.\n→ TRỤC GIẢ THUYẾT H1","Ô còn trống trong tài liệu ở bối cảnh phân phối công nghiệp B2B.\nĐiều kiện: đồng thời cả hai nhóm trên.\n→ VỊ TRÍ CỦA LUẬN VĂN"],

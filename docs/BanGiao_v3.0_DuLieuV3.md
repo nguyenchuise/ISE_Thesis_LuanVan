@@ -1,3 +1,5 @@
+> **Cập nhật bản phát hành:** `data_audit.py` và Bảng B.4–B.5 đã được gỡ khỏi luận văn; nhãn bản nháp nay nằm ở `src/ItemView_TrangThaiTruocDoiSoat.csv` (cột `Item_Win_Status_TruocDoiSoat`) và chỉ dùng cho đoạn kiểm tra độ vững ở §4.2.1/§5.5.1. Các con số kiểm toán dưới đây giữ để tham khảo nội bộ.
+
 # BÀN GIAO — LUẬN VĂN v3.0 TRÊN BỘ DỮ LIỆU V3 (15-10-2026)
 
 **Nguồn số liệu chuẩn hiện hành: `SoT_v3_SoLieuChuan.md`** (sinh tự động bởi `src/make_sot.py`). `SoT_v2_SoLieuChuan.md` chỉ còn giá trị lịch sử.

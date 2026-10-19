@@ -45,6 +45,17 @@ O["markup"]={"mean":float(i["Markup_Pct"].mean()),"sd":float(i["Markup_Pct"].std
 O["tan_suat"]={"quyet_dinh_gia_moi_thang":float(len(i)/(span/30.4)),
     "quyet_dinh_gia_moi_ngay_lam_viec":float(len(i)/(span*5/7))}
 
+# mo ta bo du lieu va cac truong lien ket CRM/Sourcing (Bang 3.1, Muc 3.1.3, Bang B.3, Muc 4.3.2)
+ct=pd.crosstab(h.Competitor_Intensity,h.Effective_Competitors_N)
+r=i.Market_Reserve_Bound/i.Avg_PFEP
+O["du_lieu"]={"head_shape":list(h.drop(columns=["dt"]).shape),"item_shape":list(i.drop(columns=["gia_tri"]).shape),
+  "EffN_mean":float(h.Effective_Competitors_N.mean()),
+  "EffN_by_intensity":{lv:{str(c):int(ct.loc[lv,c]) for c in ct.columns} for lv in ["Low","Med","High"]},
+  "Urgency_values":{f"{k:.2f}":int(v) for k,v in h.Urgency_SLA_Sensitivity.value_counts().sort_index().items()},
+  "Urgency_mean":float(h.Urgency_SLA_Sensitivity.mean()),
+  "MRB_min":float(i.Market_Reserve_Bound.min()),"MRB_max":float(i.Market_Reserve_Bound.max()),
+  "MRB_ratio_c_mean":float(r.mean()),"MRB_ratio_c_cv":float(r.std()/r.mean()),
+  "MRB_n_below_offer":int((i.Market_Reserve_Bound<i.Offered_Price).sum())}
 json.dump(O,open("ch1_stats.json","w"),indent=2)
 for k,v in O.items():
     print(f"\n[{k}]")

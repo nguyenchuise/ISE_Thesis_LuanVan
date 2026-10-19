@@ -39,7 +39,8 @@ const fx=(lines)=>new Paragraph({alignment:AlignmentType.LEFT,spacing:{before:80
   keepLines:true,
   children:lines.flatMap((l,i)=>[...(i?[new TextRun({break:1})]:[]),new TextRun({text:l.length?l:" ",font:FONT,size:22,color:C.INK})])});
 const path=require("path");
-const img=(f,w,r)=>{const buf=fs.readFileSync(path.isAbsolute(f)?f:path.join(__dirname,f));
+const IMG_W=576;   // 6,0 inch o 96 dpi
+const img=(f,w,r)=>{w=IMG_W; const buf=fs.readFileSync(path.isAbsolute(f)?f:path.join(__dirname,f));
   const rr=buf.readUInt32BE(20)/buf.readUInt32BE(16);   // ty le that doc tu header PNG (bo qua r truyen vao)
   return new Paragraph({alignment:AlignmentType.CENTER,keepNext:true,spacing:{before:120,after:40},
   children:[new ImageRun({type:"png",data:buf,transformation:{width:w,height:Math.round(w*rr)}})]});};

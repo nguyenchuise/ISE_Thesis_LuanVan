@@ -76,9 +76,10 @@ for tr,te in kf.split(X):
 h["TAT_pred"]=oof
 OUT["bt1_oof"]={"MAE":float(np.mean(np.abs(y-oof))),"R2_oof":float(1-((y-oof)**2).sum()/((y-y.mean())**2).sum())}
 
-v1=pd.read_csv("ItemView_Workload_v1_NhanTruocDoiSoat.csv")       # nhan truoc doi soat (ban nhap v2.0) — chi dung cho do nhay
-assert (v1["Project key"].values==it["Project key"].values).all() and (v1["Material"].values==it["Material"].values).all()
-it["Item_Win_Status_v1"]=v1["Item_Win_Status_v1"].values
+# Trang thai don hang truoc buoc doi soat cuoi ky — chi dung cho kiem tra do vung cua BT2 (Muc 4.2.1, 5.5.1)
+pre=pd.read_csv("ItemView_TrangThaiTruocDoiSoat.csv")
+assert (pre["Project key"].values==it["Project key"].values).all() and (pre["Material"].values==it["Material"].values).all()
+it["Win_pre"]=pre["Item_Win_Status_TruocDoiSoat"].values
 d=it.merge(h[["Project key","Is_Strategic","Is_Existing_Customer","Competitor_Intensity",
    "Payment_Term_Risk","Pricing_Queue_Depth","Assigned_Engineer_Experience","Customer_Class","TAT_pred",
    "Effective_Competitors_N","Urgency_SLA_Sensitivity","Turnaround time"]],
@@ -93,7 +94,7 @@ GRP={"Giá":["Price_Competitiveness"],"Năng lực NCC":["Supplier_SQE_Score","A
      "Quan hệ KH":["Is_Strategic","Is_Existing_Customer","CustClass"],"Cạnh tranh":["CompInt"],
      "Rủi ro TM":["PayRisk"],"Năng lực xử lý":["Pricing_Queue_Depth","Assigned_Engineer_Experience","TAT_pred"]}
 EXTRA=["Avg_PFEP","Offered_Price","Target_Price","Markup_Pct","Material_Cat","Order Quantity",
-       "Market_Reserve_Bound","Effective_Competitors_N","Urgency_SLA_Sensitivity","Turnaround time","Item_Win_Status_v1"]
+       "Market_Reserve_Bound","Effective_Competitors_N","Urgency_SLA_Sensitivity","Turnaround time","Win_pre"]
 s=d[FE+["Item_Win_Status","Project key"]+EXTRA].dropna().reset_index(drop=True)
 OUT["bt2_n"]={"items":int(len(s)),"projects":int(s["Project key"].nunique()),"win_rate":float(s.Item_Win_Status.mean())}
 Xl=sm.add_constant(s[FE].astype(float)); yl=s["Item_Win_Status"].astype(int); g=s["Project key"].astype(str)
@@ -167,17 +168,14 @@ xg=XGBClassifier(n_estimators=300,learning_rate=.05,max_depth=4,subsample=.8,col
 xg.fit(s[FE].iloc[tr],yl.iloc[tr]); px=xg.predict_proba(s[FE].iloc[te])[:,1]
 OUT["bt2_xgb"]={"AUC_test":float(roc_auc_score(yt,px)),"Brier_test":float(brier_score_loss(yt,px))}
 
-# do nhay theo phien ban nhan: cung dac ta, cung phan chia, nhan truoc doi soat (v1)
-y1=s["Item_Win_Status_v1"].astype(int)
-m1=sm.Logit(y1.iloc[tr],Zc.iloc[tr]).fit(disp=0); p1=m1.predict(Zc.iloc[te])
-OUT["bt2_label_sens"]={"n_changed":int((y1!=yl).sum()),"n_1to0":int(((y1==1)&(yl==0)).sum()),"n_0to1":int(((y1==0)&(yl==1)).sum()),
-   "win_rate_v1":float(y1.mean()),"AUC_test_v1":float(roc_auc_score(y1.iloc[te],p1)),
-   "coef_v1":{f:{"beta_z":float(m1.params[f]),"p":float(m1.pvalues[f])} for f in FE}}
-# phan bo dong hang doi nhan theo do sau hang doi (ca 8.249 dong)
-band=pd.cut(d["Pricing_Queue_Depth"],[-1,5,10,15,20,30,1000],labels=["0–5","6–10","11–15","16–20","21–30",">30"])
-chg=pd.DataFrame({"band":band,"v1":d["Item_Win_Status_v1"],"v2":d["Item_Win_Status"]})
-OUT["bt2_label_by_queue"]=[{"band":str(b),"n":int(len(g)),"n_1to0":int(((g.v1==1)&(g.v2==0)).sum()),"n_0to1":int(((g.v1==0)&(g.v2==1)).sum())}
-   for b,g in chg.groupby("band",observed=False)]
+# kiem tra do vung: cung dac ta, cung phan chia, trang thai don hang truoc doi soat cuoi ky
+y0=s["Win_pre"].astype(int)
+m0=sm.Logit(y0.iloc[tr],Zc.iloc[tr]).fit(disp=0)
+chg=(y0!=yl).values
+OUT["bt2_robust_status"]={"n_changed":int(chg.sum()),"pct_changed":float(chg.mean()*100),
+   "Q_mean_changed":float(s.loc[chg,"Pricing_Queue_Depth"].mean()),"Q_mean_unchanged":float(s.loc[~chg,"Pricing_Queue_Depth"].mean()),
+   "AUC_test_pre":float(roc_auc_score(y0.iloc[te],m0.predict(Zc.iloc[te]))),
+   "coef_pre":{f:{"beta_z":float(m0.params[f]),"p":float(m0.pvalues[f])} for f in FE}}
 
 # luu mo hinh + tap test cho BT3
 s["p_hat"]=ml.predict(Zc); s["is_test"]=0; s.loc[te,"is_test"]=1

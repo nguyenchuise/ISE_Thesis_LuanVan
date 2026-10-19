@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Sinh docs/SoT_v3_SoLieuChuan.md tu cac JSON ket qua — nguon so lieu chuan duy nhat cho ban v3.0."""
+"""Sinh docs/SoT_v3_SoLieuChuan.md tu cac JSON ket qua — nguon so lieu chuan duy nhat cua ban phat hanh."""
 import json, os
 J=lambda f: json.load(open(f))
-S1,DA,B1,B1M,B12,B3,SIM,TR,AX=[J(f) for f in ["ch1_stats.json","data_audit.json","bt1_pertask.json","bt1_models.json",
+S1,B1,B1M,B12,B3,SIM,TR,AX=[J(f) for f in ["ch1_stats.json","bt1_pertask.json","bt1_models.json",
    "ch4_bt12.json","ch4_bt3.json","ch4_sim.json","ch5_triage.json","ch4_icc_appx.json"]]
 f=lambda x,d=4: f"{x:.{d}f}".replace(".",",")
 P=B3["policies"]; HE=B3["H1_EffN"]; c=lambda b: next(r for r in B12["bt2_coef"] if r["bien"]==b); POL=SIM["meta"]["policies"]
 L=[]; a=L.append
-a("# SoT v3 — Số liệu chuẩn của luận văn v3.0 (sinh tự động bởi `src/make_sot.py`)\n")
+a("# SoT — Số liệu chuẩn của bản phát hành luận văn (sinh tự động bởi `src/make_sot.py`)\n")
 a("*Không sửa tay. Chạy `bash src/run_all.sh` để tái lập. Mọi số trong docx đọc từ JSON cùng nguồn.*\n")
-a("## 0. Dữ liệu v3\n")
-a(f"- HeadView {DA['shape']['head'][0]}×{DA['shape']['head'][1]}, ItemView {DA['shape']['item'][0]}×{DA['shape']['item'][1]}; BT2 dùng {B12['bt2_n']['items']} dòng / {B12['bt2_n']['projects']} hồ sơ; chia 80/20 theo dự án: {B12['bt2_split']['train_items']} / {B12['bt2_split']['test_items']} dòng ({B12['bt2_split']['test_projects']} hồ sơ)")
-a(f"- Nhãn đổi so với bản nháp: {DA['labels']['n_changed']} dòng ({f(DA['labels']['pct_changed'],2)}%; {DA['labels']['n_1to0']} thắng→thua, {DA['labels']['n_0to1']} thua→thắng); Q trung bình dòng đổi {f(DA['labels']['Q_mean_changed'],1)} vs {f(DA['labels']['Q_mean_unchanged'],1)}; mọi 1→0 có Q ≥ {DA['labels']['Q_min_1to0']}, mọi 0→1 có Q ≤ {DA['labels']['Q_max_0to1']}")
-a(f"- Effective_Competitors_N: Low→2, Med→3, High→4/5 (ánh xạ từ Competitor_Intensity). Urgency_SLA_Sensitivity khớp {f(DA['Urgency']['rule_match_frac']*100,0)}% quy tắc {DA['Urgency']['rule']}. Market_Reserve_Bound = {f(DA['MRB']['ratio_c_mean'],3)}× giá vốn (CV {f(DA['MRB']['ratio_c_cv']*100,1)}%)\n")
+DL=S1["du_lieu"]; R=B12["bt2_robust_status"]
+a("## 0. Dữ liệu\n")
+a(f"- HeadView {DL['head_shape'][0]}×{DL['head_shape'][1]}, ItemView {DL['item_shape'][0]}×{DL['item_shape'][1]}; BT2 dùng {B12['bt2_n']['items']} dòng / {B12['bt2_n']['projects']} hồ sơ; chia 80/20 theo dự án: {B12['bt2_split']['train_items']} / {B12['bt2_split']['test_items']} dòng ({B12['bt2_split']['test_projects']} hồ sơ)")
+a(f"- Kiểm tra độ vững (trạng thái trước đối soát cuối kỳ): {R['n_changed']} dòng đổi ({f(R['pct_changed'],2)}%), Q trung bình {f(R['Q_mean_changed'],1)} vs {f(R['Q_mean_unchanged'],1)}\n")
 a("## 1. Chương 1\n")
 pc=S1["phan_ung_canh_tranh"]
 a(f"- Vi phạm SLA {S1['sla']['so_vi_pham']}/1500 = {f(S1['sla']['ty_le_vi_pham']*100,2)}%; win rate Low/Med/High = {f(pc['Low']['win']*100,2)} / {f(pc['Med']['win']*100,2)} / {f(pc['High']['win']*100,2)}% (chênh {f((pc['Low']['win']-pc['High']['win'])*100,2)} pp); markup chênh {f(S1['bien_do_markup_giua_3_muc']*100,2)} pp\n")
@@ -21,12 +21,12 @@ t=B1M["tong_vs_congdon"]
 a(f"- CV Sales {f(B1['eda'][0]['CV'],3)}; hiệp phương sai {f(B1['phan_ra_phuong_sai']['hiep_phuong_sai_%'],1)}%; r(Sales,Pricing) = {f(B1M['tuong_quan']['Sales_Days']['Pricing_Days'],3)}")
 a(f"- BP p thang gốc {f(B1M['dac_ta'][0]['BP_p'],3)}; log MAE xấu đi {f((B1M['dac_ta'][1]['MAE_ngay']/B1M['dac_ta'][0]['MAE_ngay']-1)*100,1)}%")
 a(f"- MAE trực tiếp {f(t['MAE_du_bao_tong'])} vs cộng dồn {f(t['MAE_cong_don_4_khau'])} — chênh {f(t['Cai_thien_%'],2)}%; TAT_pred OOF MAE {f(B12['bt1_oof']['MAE'])}, R² {f(B12['bt1_oof']['R2_oof'])}\n")
-a("## 3. BT2 (nhãn v3)\n")
+a("## 3. BT2\n")
 m=B12["bt2_metrics"]
 a(f"- AUC test {f(m['AUC_test'])} [{f(m['AUC_test_CI'][0])}; {f(m['AUC_test_CI'][1])}], Brier {f(m['Brier_test'])}; XGB {f(B12['bt2_xgb']['AUC_test'])}; hiệu chuẩn +{f(B12['bt2_calib']['deviation_pct'],2)}%")
 for b in ["Price_Competitiveness","Supplier_SQE_Score","ATP_Stock_Available","Has_PPAP_Cert","Local_Supplier","Is_Existing_Customer","CustClass","CompInt","Pricing_Queue_Depth","TAT_pred"]:
-    r=c(b); v1=B12["bt2_label_sens"]["coef_v1"][b]
-    a(f"  - {b}: β = {f(r['beta_z'])} (p = {r['p']:.2e}) | nhãn v1: {f(v1['beta_z'])} (p = {v1['p']:.3f})")
+    r=c(b); v0=B12["bt2_robust_status"]["coef_pre"][b]
+    a(f"  - {b}: β = {f(r['beta_z'])} (p = {r['p']:.2e}) | trước đối soát: {f(v0['beta_z'])} (p = {v0['p']:.3f})")
 a("")
 a("## 4. BT3\n")
 for k in ["CBPO Realistic (kẹp P5–P95)","Nash A — miền tuyệt đối (kẹp)","Nash B — miền tỷ lệ (kẹp)","Nash C — cận dòng hàng, N thực tế (kẹp)",

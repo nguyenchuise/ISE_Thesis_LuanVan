@@ -1,12 +1,11 @@
-# SoT v3 — Số liệu chuẩn của luận văn v3.0 (sinh tự động bởi `src/make_sot.py`)
+# SoT — Số liệu chuẩn của bản phát hành luận văn (sinh tự động bởi `src/make_sot.py`)
 
 *Không sửa tay. Chạy `bash src/run_all.sh` để tái lập. Mọi số trong docx đọc từ JSON cùng nguồn.*
 
-## 0. Dữ liệu v3
+## 0. Dữ liệu
 
 - HeadView 1500×31, ItemView 8249×23; BT2 dùng 7519 dòng / 1475 hồ sơ; chia 80/20 theo dự án: 6153 / 1366 dòng (295 hồ sơ)
-- Nhãn đổi so với bản nháp: 190 dòng (2,30%; 127 thắng→thua, 63 thua→thắng); Q trung bình dòng đổi 16,2 vs 9,7; mọi 1→0 có Q ≥ 6, mọi 0→1 có Q ≤ 8
-- Effective_Competitors_N: Low→2, Med→3, High→4/5 (ánh xạ từ Competitor_Intensity). Urgency_SLA_Sensitivity khớp 100% quy tắc (1 + 0,5·Is_Strategic) × (1 + 0,25·1[Required_Approval_Levels ≥ 3]). Market_Reserve_Bound = 1,988× giá vốn (CV 5,8%)
+- Kiểm tra độ vững (trạng thái trước đối soát cuối kỳ): 172 dòng đổi (2,29%), Q trung bình 15,8 vs 9,7
 
 ## 1. Chương 1
 
@@ -18,19 +17,19 @@
 - BP p thang gốc 0,609; log MAE xấu đi 8,4%
 - MAE trực tiếp 0,8437 vs cộng dồn 0,8372 — chênh 0,77%; TAT_pred OOF MAE 0,8437, R² 0,7368
 
-## 3. BT2 (nhãn v3)
+## 3. BT2
 
 - AUC test 0,7808 [0,7579; 0,8051], Brier 0,1814; XGB 0,7837; hiệu chuẩn +3,16%
-  - Price_Competitiveness: β = 0,8384 (p = 0.00e+00) | nhãn v1: 0,8948 (p = 0.000)
-  - Supplier_SQE_Score: β = 0,4104 (p = 0.00e+00) | nhãn v1: 0,4521 (p = 0.000)
-  - ATP_Stock_Available: β = 0,2849 (p = 0.00e+00) | nhãn v1: 0,2957 (p = 0.000)
-  - Has_PPAP_Cert: β = 0,2849 (p = 0.00e+00) | nhãn v1: 0,3113 (p = 0.000)
-  - Local_Supplier: β = 0,1157 (p = 1.00e-04) | nhãn v1: 0,1077 (p = 0.000)
-  - Is_Existing_Customer: β = 0,2403 (p = 0.00e+00) | nhãn v1: 0,2464 (p = 0.000)
-  - CustClass: β = 0,1431 (p = 0.00e+00) | nhãn v1: 0,1722 (p = 0.000)
-  - CompInt: β = -0,1334 (p = 4.00e-05) | nhãn v1: -0,0390 (p = 0.233)
-  - Pricing_Queue_Depth: β = -0,2220 (p = 0.00e+00) | nhãn v1: -0,0605 (p = 0.060)
-  - TAT_pred: β = -0,0927 (p = 3.77e-03) | nhãn v1: 0,0556 (p = 0.089)
+  - Price_Competitiveness: β = 0,8384 (p = 0.00e+00) | trước đối soát: 0,8948 (p = 0.000)
+  - Supplier_SQE_Score: β = 0,4104 (p = 0.00e+00) | trước đối soát: 0,4521 (p = 0.000)
+  - ATP_Stock_Available: β = 0,2849 (p = 0.00e+00) | trước đối soát: 0,2957 (p = 0.000)
+  - Has_PPAP_Cert: β = 0,2849 (p = 0.00e+00) | trước đối soát: 0,3113 (p = 0.000)
+  - Local_Supplier: β = 0,1157 (p = 1.00e-04) | trước đối soát: 0,1077 (p = 0.000)
+  - Is_Existing_Customer: β = 0,2403 (p = 0.00e+00) | trước đối soát: 0,2464 (p = 0.000)
+  - CustClass: β = 0,1431 (p = 0.00e+00) | trước đối soát: 0,1722 (p = 0.000)
+  - CompInt: β = -0,1334 (p = 4.00e-05) | trước đối soát: -0,0390 (p = 0.233)
+  - Pricing_Queue_Depth: β = -0,2220 (p = 0.00e+00) | trước đối soát: -0,0605 (p = 0.060)
+  - TAT_pred: β = -0,0927 (p = 3.77e-03) | trước đối soát: 0,0556 (p = 0.089)
 
 ## 4. BT3
 
