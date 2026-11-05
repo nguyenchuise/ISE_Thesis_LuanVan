@@ -1,0 +1,550 @@
+<title>Workflow phương pháp luận</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sơ đồ dòng chảy kiểu "boustrophedon" (5 làn, đổi chiều mỗi làn) bên trái, bảng chi tiết dính bên phải; dưới 1000px xếp chồng. */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --surface-2:#F6F8FA; --ink:#16202A; --muted:#566373; --faint:#8A96A3; --line:#CBD3DC; --band:#E4E9EE;
+  --data:#4E6072; --bt1:#0B7A7E; --bt2:#3B55C4; --bt3:#A8670E; --sim:#B03A55;
+  --yes:#1D7A46; --no:#B23A2E; --info:#566373;
+  --font-display:"Be Vietnam Pro",ui-sans-serif,system-ui,sans-serif;
+  --font-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161C; --surface:#18212A; --surface-2:#1E2832; --ink:#E6ECF1; --muted:#9AA8B6; --faint:#6F7D8B; --line:#33414E; --band:#151D25;
+  --data:#93A6B9; --bt1:#3CC2C2; --bt2:#8C9DFF; --bt3:#E6A644; --sim:#F07A93;
+  --yes:#5BC88A; --no:#F2826F; --info:#9AA8B6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161C; --surface:#18212A; --surface-2:#1E2832; --ink:#E6ECF1; --muted:#9AA8B6; --faint:#6F7D8B; --line:#33414E; --band:#151D25;
+  --data:#93A6B9; --bt1:#3CC2C2; --bt2:#8C9DFF; --bt3:#E6A644; --sim:#F07A93;
+  --yes:#5BC88A; --no:#F2826F; --info:#9AA8B6; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1480px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+header.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.15;margin:6px 0 8px;text-wrap:balance;letter-spacing:-.01em}
+.lede{margin:0;max-width:68ch;color:var(--muted)}
+.lede b{color:var(--ink);font-weight:600}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.group{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.glabel{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-right:4px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface-2);border-radius:7px;padding:6px 11px;font-size:13.5px;font-weight:500;line-height:1.2}
+.btn:hover{border-color:var(--muted)}
+.btn:focus-visible,.seg button:focus-visible,.chip:focus-visible,g.node:focus-visible{outline:2px solid var(--bt2);outline-offset:2px}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn svg{width:14px;height:14px}
+.counter{font-family:var(--font-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:8ch}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;background:var(--surface-2);padding:6px 11px;font-size:13.5px;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 11px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.threadnote{font-size:13.5px;color:var(--muted);margin:-8px 2px 0;min-height:1.4em}
+
+.main{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;align-items:start}
+@media (max-width:1000px){.main{grid-template-columns:1fr}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0;display:flex;flex-direction:column}
+.scroller{overflow-x:auto;padding:12px 8px 4px}
+svg.flow{display:block;width:100%;min-width:860px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:10px 16px 6px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.rail{display:flex;gap:4px;padding:8px 16px 14px;flex-wrap:wrap}
+.rail button{width:26px;height:22px;border-radius:5px;border:1px solid var(--line);background:var(--surface-2);font-family:var(--font-mono);font-size:10.5px;color:var(--muted);padding:0;font-variant-numeric:tabular-nums}
+.rail button.done{background:color-mix(in srgb,var(--c) 18%,var(--surface-2));border-color:color-mix(in srgb,var(--c) 45%,var(--line));color:var(--ink)}
+.rail button.cur{background:var(--c);border-color:var(--c);color:var(--surface)}
+
+/* SVG */
+.band{fill:var(--band)}
+.lanelabel{font-family:var(--font-display);font-weight:600;font-size:12px;letter-spacing:.02em}
+.lanesec{font-family:var(--font-mono);font-size:10.5px;fill:var(--faint)}
+g.node{cursor:pointer;transition:opacity .25s;outline:none}
+g.node .shape{fill:var(--surface);stroke:var(--line);stroke-width:1.2;transition:stroke .2s,stroke-width .2s,fill .2s}
+g.node .tick{transition:opacity .2s}
+g.node .sec{font-family:var(--font-mono);font-size:10px;fill:var(--muted)}
+g.node .ttl{font-family:var(--font-display);font-weight:600;font-size:13.2px;fill:var(--ink)}
+g.node .sub{font-family:var(--font-body);font-size:11.2px;fill:var(--muted)}
+g.node:hover .shape{stroke:var(--c);stroke-width:1.8}
+g.node.sel .shape{stroke:var(--c);stroke-width:2.6;fill:color-mix(in srgb,var(--c) 9%,var(--surface))}
+g.node.flash .shape{animation:flash 1s ease-out}
+@keyframes flash{0%{fill:color-mix(in srgb,var(--c) 32%,var(--surface))}100%{fill:color-mix(in srgb,var(--c) 9%,var(--surface))}}
+g.node.out .shape{fill:color-mix(in srgb,var(--c) 14%,var(--surface));stroke:var(--c)}
+g.node.out.sel .shape{fill:color-mix(in srgb,var(--c) 24%,var(--surface))}
+.dim g.node:not(.on){opacity:.22}
+.dim path.edge:not(.on),.dim .elabel:not(.on){opacity:.12}
+path.edge{fill:none;stroke-width:1.6;transition:opacity .25s,stroke-width .2s}
+path.edge.main{stroke:var(--c)}
+path.edge.ctx{stroke:var(--c);stroke-dasharray:4 4;opacity:0;stroke-width:1.4}
+path.edge.ctx.on,path.edge.ctx.show{opacity:.95}
+path.edge.hot{stroke-width:2.8}
+.elabel{font-family:var(--font-mono);font-size:10.2px;fill:var(--muted);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round;transition:opacity .25s}
+.elabel.key{fill:var(--ink);font-weight:500}
+.elabel.ctxl{opacity:0}
+.elabel.ctxl.on,.elabel.ctxl.show{opacity:1}
+circle.pkt{pointer-events:none}
+circle.amb{opacity:.55}
+.dim circle.amb{opacity:0}
+
+/* Panel */
+aside.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 24px);overflow:auto;min-width:0}
+@media (max-width:1000px){aside.panel{position:static;max-height:none}}
+.phead{padding:16px 18px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px;border-top:4px solid var(--c);border-radius:12px 12px 0 0}
+.ptag{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:var(--font-mono);font-size:11.5px;color:var(--muted);letter-spacing:.03em}
+.ptag .lane{color:var(--c);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.kind{border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:10.5px}
+.phead h2{font-family:var(--font-display);font-size:20px;font-weight:700;margin:0;line-height:1.25;text-wrap:balance}
+.pbody{padding:14px 18px 20px;display:flex;flex-direction:column;gap:16px}
+.pbody h3{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:500;margin:0 0 6px}
+.pbody p{margin:0}
+.pbody ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.fx{font-family:var(--font-mono);font-size:12.3px;line-height:1.6;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre;overflow-x:auto;color:var(--ink)}
+.facts{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 14px;font-size:13.8px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-family:var(--font-mono);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.dec{display:flex;flex-direction:column;gap:6px}
+.opt{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13.8px}
+.opt .v{font-family:var(--font-mono);font-weight:600;text-align:center}
+.opt.yes{border-color:color-mix(in srgb,var(--yes) 50%,var(--line));background:color-mix(in srgb,var(--yes) 7%,var(--surface))}
+.opt.yes .v{color:var(--yes)} .opt.no .v{color:var(--no)} .opt.info .v{color:var(--info)}
+.opt b{font-weight:600}
+.opt small{display:block;color:var(--muted);font-size:12.8px}
+.warn{font-size:13.5px;border-left:3px solid var(--no);padding:6px 0 6px 12px;color:var(--ink)}
+.warn b{color:var(--no)}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.links button{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;padding:4px 9px;font-size:12.8px;display:inline-flex;gap:6px;align-items:center}
+.links button i{width:8px;height:8px;border-radius:2px;background:var(--c);display:inline-block}
+.links button:hover{border-color:var(--muted)}
+.code{display:flex;flex-wrap:wrap;gap:6px}
+.code span{font-family:var(--font-mono);font-size:12px;border:1px dashed var(--line);border-radius:5px;padding:2px 7px;color:var(--muted)}
+.pfoot{display:flex;justify-content:space-between;gap:8px;padding:0 18px 18px}
+
+footer.note{font-size:13px;color:var(--muted);max-width:90ch}
+footer.note code{font-family:var(--font-mono);font-size:12.5px}
+@media (prefers-reduced-motion:reduce){g.node.flash .shape{animation:none}*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Luận văn ThS ISE · Chương 3 · Phương pháp nghiên cứu</div>
+      <h1>Workflow phương pháp luận</h1>
+      <p class="lede">Ba bài toán nối thành một chuỗi: <b>BT1</b> dự báo thời gian xử lý, đầu ra đi vào <b>BT2</b> dự báo thắng/thua, xác suất đã hiệu chuẩn đi vào <b>BT3</b> tối ưu giá. Sau đó là mô phỏng liên kỳ và thiết kế thực nghiệm kiểm chứng. Bấm vào từng khối để xem đặc tả, cổng quyết định và số liệu.</p>
+    </div>
+  </header>
+
+  <div class="controls" role="toolbar" aria-label="Điều khiển workflow">
+    <div class="group">
+      <button class="btn primary" id="play" type="button" aria-label="Chạy tuần tự"><svg viewBox="0 0 16 16" aria-hidden="true"><path id="playicon" d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span id="playtxt">Chạy tuần tự</span></button>
+      <button class="btn" id="prev" type="button" aria-label="Bước trước"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 3 5.5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+      <button class="btn" id="next" type="button" aria-label="Bước sau"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m5.5 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button>
+      <span class="counter" id="counter">Bước 01/20</span>
+    </div>
+    <div class="group">
+      <span class="glabel">Hiển thị</span>
+      <div class="seg" id="lens">
+        <button type="button" data-lens="m" aria-pressed="true">Phương pháp</button>
+        <button type="button" data-lens="r" aria-pressed="false">Kết quả</button>
+        <button type="button" data-lens="c" aria-pressed="false">Mã nguồn</button>
+      </div>
+    </div>
+    <div class="group" id="threads">
+      <span class="glabel">Lần theo</span>
+    </div>
+  </div>
+  <p class="threadnote" id="threadnote"></p>
+
+  <div class="main">
+    <section class="stage" aria-label="Sơ đồ workflow">
+      <div class="scroller"><svg class="flow" id="flow" viewBox="0 0 1110 762" role="group" aria-label="Sơ đồ khối phương pháp luận"></svg></div>
+      <div class="legend">
+        <span><svg width="28" height="10" aria-hidden="true"><path d="M0 5h22" stroke="var(--muted)" stroke-width="1.6"/><path d="M20 1.5 26 5l-6 3.5z" fill="var(--muted)"/></svg>Luồng chính</span>
+        <span><svg width="28" height="10" aria-hidden="true"><path d="M0 5h26" stroke="var(--muted)" stroke-width="1.4" stroke-dasharray="4 4"/></svg>Liên kết ngữ cảnh (hiện khi chọn)</span>
+        <span><svg width="26" height="14" aria-hidden="true"><path d="M5 1h16l4 6-4 6H5L1 7z" fill="none" stroke="var(--muted)" stroke-width="1.2"/></svg>Cổng quyết định</span>
+        <span><svg width="26" height="14" aria-hidden="true"><rect x="1" y="1" width="24" height="12" rx="6" fill="color-mix(in srgb,var(--muted) 18%,transparent)" stroke="var(--muted)"/></svg>Đầu ra chuyển giao</span>
+      </div>
+      <div class="rail" id="rail" aria-label="Các bước"></div>
+    </section>
+
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+
+  <footer class="note">Nguồn: <code>src/ch03.js</code> (đặc tả), <code>docs/SoT_v3_SoLieuChuan.md</code> (số liệu sinh tự động từ JSON). Số liệu là kết quả trên dữ liệu đã ẩn danh hóa và tiêm nhiễu; kết luận định tính bền hơn từng con số tuyệt đối. Mục 4.4 là mô phỏng, không phải quan sát.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const LANES=[
+  {id:"data",name:"Dữ liệu",sec:"3.1"},
+  {id:"bt1",name:"BT1 · Thời gian xử lý",sec:"3.2"},
+  {id:"bt2",name:"BT2 · Thắng / thua",sec:"3.3"},
+  {id:"bt3",name:"BT3 · Tối ưu giá",sec:"3.4"},
+  {id:"sim",name:"Mô phỏng & kiểm chứng",sec:"3.4.6–3.6"}
+];
+const KIND={step:"Bước xử lý",gate:"Cổng quyết định",out:"Đầu ra chuyển giao"};
+
+const N=[
+{id:"D1",lane:0,col:0,kind:"step",sec:"3.1.1",t:["Nguồn ERP · CRM","· Sourcing"],
+ m:"2 bảng, nối qua khóa dự án",r:"1.500 hồ sơ · 8.249 dòng",c:"ch1_stats.py",
+ what:"Dữ liệu trích từ ERP, liên kết phân hệ CRM và Sourcing. Hai bảng ở hai cấp phân tích. Mỗi hồ sơ trung bình 5,50 dòng hàng, nên quan sát cấp dòng hàng phân cụm theo hồ sơ.",
+ facts:[["HeadView (cấp hồ sơ RFQ)","1.500 × 31"],["ItemView (cấp dòng hàng)","8.249 × 23"],["Dòng hàng / hồ sơ","5,50"]],
+ list:["HeadView: TAT từng khâu, đặc điểm khách hàng, Effective_Competitors_N (CRM), Urgency_SLA_Sensitivity, độ sâu hàng đợi, kinh nghiệm kỹ sư","ItemView: giá vốn, markup, giá chào, giá mục tiêu, Market_Reserve_Bound (Sourcing), nhà cung cấp, thắng/thua theo trạng thái đơn hàng cuối kỳ","BT1 làm việc ở cấp hồ sơ; BT2 và BT3 ở cấp dòng hàng"],
+ code:["HeadView_Workload.csv","ItemView_Workload.csv","ch1_stats.py"]},
+{id:"D2",lane:0,col:1,kind:"step",sec:"3.1.2",t:["Làm sạch &","giá trị khuyết"],
+ m:"Loại trùng; listwise deletion",r:"11.694 → 8.249 → 7.519",c:"ch1_stats.py",
+ what:"Loại bản ghi trùng, thiếu khóa liên kết và trạng thái mua hàng không xác định. Giá trị khuyết xử lý bằng loại bỏ theo danh sách đầy đủ, vì tỷ lệ khuyết dưới 5% và gán khuyết sẽ thêm bất định vào chính biến giá.",
+ facts:[["Bản ghi thô","11.694"],["Bản ghi hợp lệ","8.249"],["Mẫu BT2","7.519 dòng / 1.475 hồ sơ"],["Khuyết Supplier_SQE_Score","412 (5,0%)"],["Khuyết Price_Competitiveness","329 (4,0%)"]],
+ warn:"<b>Khai báo bảo mật.</b> Dữ liệu đã băm định danh, tiêm nhiễu vào trường thời gian và xáo nhẹ markup. Thứ tự khâu, dấu hệ số và chiều tương quan bền hơn số tuyệt đối.",
+ code:["ch1_stats.py","ch4_bt12.py"]},
+{id:"D3",lane:0,col:2,kind:"step",sec:"3.1.3",t:["Xây dựng","đặc trưng"],
+ m:"PCA độ phức tạp · lịch sử KH · U",r:"U ∈ {1,00; 1,25; 1,50; 1,88}",c:"ch4_bt12.py",
+ what:"Ba nhóm đặc trưng: chỉ số phức tạp hồ sơ (PCA trên cấp phê duyệt, số lần làm rõ bản vẽ, hàng đợi), đặc trưng lịch sử khách hàng, vị thế giá trong nhóm hàng. Thêm chỉ số nhạy cảm cam kết U dùng làm trọng số chi phí vi phạm SLA.",
+ fx:"U = (1 + 0,5·Is_Strategic)\n  × (1 + 0,25·1[Approval_Levels ≥ 3])",
+ list:["Chống rò rỉ: đặc trưng lịch sử chỉ dùng thông tin phát sinh trước thời điểm tạo hồ sơ","Tỷ lệ thắng lịch sử của khách hàng chỉ tính khi đã có ít nhất 3 hồ sơ trước đó","Effective_Competitors_N (2 · 3 · 4–5 theo tầng cạnh tranh) và Market_Reserve_Bound dùng nguyên trạng cho Đặc tả Nash C"],
+ code:["ch4_bt12.py"]},
+{id:"D4",lane:0,col:3,kind:"step",sec:"3.1.4",t:["Chia dữ liệu","theo cụm dự án"],
+ m:"80/20 theo hồ sơ · 5-fold",r:"6.153 / 1.366 dòng",c:"ch4_bt12.py",
+ what:"Toàn bộ dòng hàng của một hồ sơ nằm trọn trong một tập. Chia ngẫu nhiên theo dòng sẽ để mô hình học đặc điểm riêng của hồ sơ ở tập huấn luyện rồi áp lại cho chính hồ sơ đó ở tập kiểm tra.",
+ facts:[["Huấn luyện (dòng hàng)","6.153"],["Kiểm tra (dòng hàng)","1.366"],["Hồ sơ trong tập kiểm tra","295"],["Mô hình cấp hồ sơ","CV 5 lớp"]],
+ code:["ch4_bt12.py"]},
+
+{id:"B1a",lane:1,col:3,kind:"step",sec:"3.2.1",t:["OLS theo 4 khâu","+ TAT tổng"],
+ m:"Z-score · 5 biến lúc tiếp nhận",r:"VIF ≈ 1,00 cả 5 biến",c:"bt1_pertask.py",
+ what:"Dự báo thời gian từng khâu trước, sau đó tính TAT tổng theo hai đường độc lập để kiểm tra tính nhất quán dạng hàm. Năm biến quan sát được lúc tiếp nhận: cấp phê duyệt, số lần làm rõ bản vẽ, hàng đợi Pricing, kinh nghiệm kỹ sư, năng suất gần đây.",
+ fx:"z_kj = (x_kj − mean x_k) / sd x_k\nT_sj = β_0s + Σ_k β_ks·z_kj + ε_sj\n  s ∈ {Sales, WBS, SC, Pricing}\n(a) cộng dồn:  TAT_j = Σ_s T̂_sj\n(b) trực tiếp: TAT_j = β_0 + Σ_k β_k·z_kj + ε_j",
+ code:["bt1_pertask.py","bt1_models.py"]},
+{id:"B1g",lane:1,col:2,kind:"gate",sec:"3.2.2",t:["Chẩn đoán","phần dư 5 bước"],
+ m:"BP/White → JB → 4 đặc tả",r:"Chọn thang gốc + HC3",c:"bt1_models.py",
+ what:"Không diễn giải hệ số trước khi kiểm tra giả định. Phương sai thay đổi và phần dư lệch là hai vấn đề khác nhau, cần hai biện pháp khác nhau. Chọn đặc tả theo sai số ngoài mẫu kèm mức thỏa giả định, không theo R².",
+ dec:[["yes","Thang gốc + sai số vững HC3","BP p = 0,609: phương sai ổn; HC3 giữ suy luận an toàn"],["no","Biến đổi logarit","BP p < 1e−4 và MAE xấu đi 8,4%"],["info","GLM họ Gamma","Đặc tả cạnh tranh để đối chiếu"],["info","Bước 4–5: VIF < 5, CV 5 lớp","Báo cáo MAE theo đơn vị ngày"]],
+ code:["bt1_models.py"]},
+{id:"B1c",lane:1,col:1,kind:"step",sec:"3.2.3",t:["Cấu trúc biến động","giữa các khâu"],
+ m:"CV bootstrap · Levene/Bartlett/KW",r:"CV Sales 0,760 · cov 47,4%",c:"bt1_pertask.py",
+ what:"Ba hướng bổ sung: so sánh hệ số biến thiên với khoảng tin cậy bootstrap 2.000 lần; kiểm định đồng nhất phương sai bằng ba phép; phân rã phương sai TAT tổng thành phần từng khâu và phần hiệp phương sai. Khung diễn giải được đăng ký trước khi xem kết quả.",
+ facts:[["CV khâu Sales (cao nhất)","0,760"],["Tỷ trọng hiệp phương sai","47,4%"],["r(Sales, Pricing)","−0,037"],["MAE trực tiếp / cộng dồn","0,8437 / 0,8372"],["Chênh lệch hai đường","0,77%"]],
+ list:["Levene, Bartlett, Kruskal–Wallis đều bác bỏ đồng nhất phương sai","Hiệp phương sai lớn: có yếu tố phức tạp chung chi phối nhiều khâu","Tách khâu không cải thiện dự báo; giá trị nằm ở chẩn đoán"],
+ code:["bt1_pertask.py"]},
+{id:"B1o",lane:1,col:0,kind:"out",sec:"3.3.2",t:["TAT_pred (OOF)"],
+ m:"Dự báo ngoài lớp, không dùng TAT thực",r:"MAE 0,8437 · R² 0,7368",c:"ch4_bt12.py",
+ what:"Điểm nối BT1 → BT2. Lúc ra quyết định giá, thời gian xử lý thực của hồ sơ chưa xảy ra. Vì vậy BT2 nhận giá trị DỰ BÁO ngoài lớp (out-of-fold) từ BT1. Đưa TAT thực vào là rò rỉ dữ liệu từ tương lai.",
+ facts:[["MAE OOF (ngày)","0,8437"],["R² OOF","0,7368"]],
+ code:["ch4_bt12.py"]},
+
+{id:"B2a",lane:2,col:0,kind:"step",sec:"3.3.1–3.3.2",t:["Logistic","· 6 nhóm biến"],
+ m:"MLE · OR = exp(β) · XGB đối chứng",r:"β PC +0,838 · Queue −0,222",c:"ch4_bt12.py",
+ what:"Biến phụ thuộc nhị phân cấp dòng hàng: bài toán phân loại có giám sát, không phải chuỗi thời gian. Hồi quy logistic cho hệ số diễn giải được và xác suất hiệu chuẩn được, hai điều kiện bắt buộc khi làm đầu vào tối ưu giá. Cây tăng cường gradient chỉ làm chuẩn so sánh.",
+ fx:"η_i = β_0 + Σ_k β_k·x_ki\np_i = P(Y_i=1 | x_i) = 1 / (1 + e^−η_i)\nℓ(β) = Σ_i [y_i ln p_i + (1−y_i) ln(1−p_i)]",
+ facts:[["Giá · Price_Competitiveness (+)","+0,838"],["NCC · Supplier_SQE_Score (+)","+0,410"],["NCC · ATP / PPAP (+)","+0,285 / +0,285"],["Quan hệ · Existing_Customer (+)","+0,240"],["Cạnh tranh · Competitor_Intensity (−)","−0,133"],["Năng lực · Pricing_Queue_Depth (−)","−0,222"],["Năng lực · TAT_pred (−)","−0,093 (p 0,0038)"]],
+ warn:"<b>Liên hệ có điều kiện.</b> β_Queue và β_TAT có thể nội sinh. Trên trạng thái trước đối soát cuối kỳ, hai hệ số này không có ý nghĩa (p 0,060 / 0,089). Xem §4.2.1.",
+ code:["ch4_bt12.py"]},
+{id:"B2g",lane:2,col:1,kind:"gate",sec:"3.3.2",t:["Chọn","biến tín hiệu giá"],
+ m:"Markup_Pct hay Price_Competitiveness",r:"Chọn Price_Competitiveness",c:"ch4_bt12.py",
+ what:"Hai ứng viên không tương đương. Markup tính từ giá vốn của chính doanh nghiệp, không chứa thông tin mặt bằng giá thị trường. Price_Competitiveness = T/p đo tương quan giữa giá chào và giá mục tiêu của khách hàng.",
+ dec:[["yes","Price_Competitiveness (r = T/p)","β = +0,838, p ≈ 0; đúng chiều kinh tế"],["no","Markup_Pct","p = 0,749: không mang thông tin; không dùng ở BT2 và BT3"]],
+ code:["ch4_bt12.py","bt3_form2.py"]},
+{id:"B2c",lane:2,col:2,kind:"step",sec:"3.3.3",t:["Hiệu chuẩn","xác suất"],
+ m:"Đường hiệu chuẩn + kiểm tra tổng hợp",r:"AUC 0,7808 · Brier 0,1814",c:"ch4_bt12.py",
+ what:"Đầu ra BT2 được nhân với biên lợi nhuận ở BT3, nên mô hình phải đúng mức xác suất, không chỉ đúng thứ hạng. Kiểm tra bằng đường cong hiệu chuẩn theo nhóm và bằng so sánh tổng lợi nhuận kỳ vọng với thực nhận tại giá lịch sử.",
+ facts:[["AUC tập kiểm tra","0,7808"],["KTC 95%","[0,7579; 0,8051]"],["Brier","0,1814"],["XGB (chuẩn so sánh)","0,7837"],["Lệch hiệu chuẩn tổng hợp","+3,16%"]],
+ list:["XGB không vượt trội đáng kể: logistic không bỏ sót quan hệ phi tuyến lớn","Mô hình hơi lạc quan; đã khai báo ở §4.2.2 và §5.5.2"],
+ code:["ch4_bt12.py"]},
+{id:"B2o",lane:2,col:3,kind:"out",sec:"3.4.1",t:["P(Win | p, x)","+ Σ_β"],
+ m:"Xác suất đã hiệu chuẩn + hiệp phương sai",r:"Đầu vào BT3 và mô phỏng",c:"bt2_model.json",
+ what:"Điểm nối BT2 → BT3. Hàm phản hồi logistic theo giá được chuyển giao kèm ma trận hiệp phương sai của hệ số, để mô phỏng có thể rút lại bộ hệ số ở mỗi lần lặp.",
+ fx:"η(p) = α + γ·(T/p) + x'δ\n∂P/∂p = P(1−P)·(−γT/p²) < 0  khi γ > 0",
+ code:["bt2_model.json","bt2_scored.pkl"]},
+
+{id:"B3a",lane:3,col:3,kind:"step",sec:"3.4.1–3.4.2",t:["CBPO","max (p−c)·P(Win)"],
+ m:"FOC phi tuyến · dò lưới + Brent",r:"+13,91% · kẹp 36,4%",c:"ch4_bt3.py",
+ what:"Khung Friedman (1956) vận hành trên xác suất thắng đã hiệu chuẩn. Điều kiện bậc nhất không có nghiệm dạng đóng; giải bằng dò lưới và thuật toán Brent, hai cách cho cùng nghiệm. Đạo hàm bậc hai đổi dấu trên miền giá: hàm mục tiêu phi tuyến theo giá.",
+ fx:"E[π(p)] = (p − c)·P(Win | p, x)\np* = argmax_p E[π(p)]\nFOC: γ·T·(p − c)·(1 − P(p)) = p²",
+ facts:[["Uplift CBPO Realistic","+13,91%"],["Tỷ lệ bị kẹp P5–P95","36,4%"]],
+ code:["ch4_bt3.py"]},
+{id:"B3b",lane:3,col:2,kind:"gate",sec:"3.4.3",t:["Cân bằng Nash A/B/C","+ kiểm định H1"],
+ m:"Krishna (2009) · N bằng 4 cách · H1 hai mặt",r:"Nash C +10,45% · kẹp 32,4%",c:"bt3_form2.py",
+ what:"Ba đặc tả cho cận trên miền chi phí. Số đối thủ hiệu dụng ước lượng bằng 4 phương pháp để đo độ rộng bất định. H1 kiểm định độ co giãn của biên giá theo N trên hai loại giá có bản chất khác nhau, SE cụm theo hồ sơ (n = 7.519).",
+ fx:"A: p* = c + (P99_cat(c) − c) / N_hyb\nB: p* = c + δ·c / N_hyb,  δ = CV(T/c)·√3\nC: p* = c + (MRB − c) / N_eff\nH1: ln(markup) = a + b·ln N + u",
+ dec:[["no","Nash A — cận tuyệt đối","+4,06%, kẹp 85,4%"],["no","Nash B — cận tỷ lệ","−29,90%, kẹp 100%"],["yes","Nash C — cận dòng hàng, N thực","+10,45%, kẹp 32,4% · thuần +11,68% · lai ±5% +12,85%"],["info","H1 lịch sử: b = −0,0033","p(b=0) = 0,169: không bác bỏ cost-plus"],["info","H1 FOC: b = −0,370 · Nash C: b = −1,121","Nash C gần −1 là đồng nhất thức, không tính là bằng chứng"]],
+ code:["bt3_form2.py","ch4_bt3.py"]},
+{id:"B3c",lane:3,col:1,kind:"step",sec:"3.4.4",t:["Giá bóng năng lực","λ(Q) + H2"],
+ m:"P_breach(Q) → Δ(Q) → λ = π_SLA·Δ",r:"CBPO + λ(Q)·U: +15,09%",c:"ch4_bt3.py",
+ what:"Giá bóng xây từ ngoại tác tắc nghẽn: nhận thêm một hồ sơ làm tăng xác suất vi phạm SLA cho các hồ sơ đang chờ. Phiên bản trọng số nhân với U của hồ sơ. Chặn trên tại độ sâu hàng đợi mà dữ liệu bắt đầu thưa; so sánh hai dạng: cộng thẳng vào giá và nội sinh hóa vào chi phí.",
+ fx:"P_breach(Q) = 1 / (1 + e^−(α₀ + α₁Q))\nΔ(Q) = (Q+1)·P_breach(Q+1) − Q·P_breach(Q)\nλ(Q) = π_SLA·Δ(Q)\nλ_U,j(Q) = U_j·π_SLA·Δ(Q)",
+ facts:[["CBPO + λ(Q)","+14,96%"],["CBPO + λ(Q)·U","+15,09%"]],
+ code:["ch4_bt3.py"]},
+{id:"B3g",lane:3,col:0,kind:"gate",sec:"3.4.5",t:["Kiểm chứng","giả dược"],
+ m:"λ(Q) động so với hằng số λ̄",r:"−0,18 pp / −0,23 pp",c:"ch4_bt3.py",
+ what:"Bước bắt buộc. Thay giá bóng phụ thuộc hàng đợi bằng hằng số cùng trung bình, giữ nguyên mọi thứ khác. Hai nhánh cùng nâng mặt bằng giá, chỉ khác ở điều tiết theo hàng đợi. Chênh lệch là đóng góp riêng của cơ chế.",
+ dec:[["no","λ(Q) 14,96% so với giả dược 15,14%","Δ = −0,18 pp"],["no","λ(Q)·U 15,09% so với giả dược 15,32%","Δ = −0,23 pp"],["info","Kết luận tĩnh","Toàn bộ mức tăng đến từ nâng giá đồng loạt; không quy công cho cơ chế. Đánh giá tĩnh có điểm mù: giá không phản hồi lên hàng đợi → cần mô phỏng liên kỳ"]],
+ code:["ch4_bt3.py"]},
+
+{id:"S1",lane:4,col:0,kind:"step",sec:"3.4.6",t:["Mô phỏng sự kiện","rời rạc liên kỳ"],
+ m:"Phát lại 1.500 hồ sơ · m máy Pricing",r:"C1: m=11 · C2: m=9",c:"ch4_sim.py",
+ what:"Bốn nguyên tắc cố định trước khi chạy. (1) Neo vào quan sát: chỉ thời gian chờ Pricing thay đổi, chênh lệch cộng vào giá trị quan sát. (2) Giá không tác động lên hàng đợi. (3) Hai cách hiệu chỉnh: C1 là cận dưới, C2 là cận trên. (4) 200 lần lặp, rút lại β từ N(β̂, Σ̂), dùng chung chuỗi ngẫu nhiên.",
+ fx:"TAT_j^π = TAT_j^obs + (W_j^π − W_j^FIFO)\nQ_j^π   = Q_j^obs   + μ·(W_j^π − W_j^FIFO)",
+ facts:[["C1 (phần Pricing do hàng đợi)","m = 11, κ = 0,77, W̄ = 0,411"],["C2 (tắc nghẽn toàn chuỗi)","m = 9, κ = 0,69, W̄ = 1,145"],["Số lần lặp","200"]],
+ code:["ch4_sim.py"]},
+{id:"S2",lane:4,col:1,kind:"gate",sec:"3.4.6 · 4.4",t:["7 cơ chế P1–P7","· phân luồng G1/G2"],
+ m:"So sánh cặp · mặt phẳng chuyển pha",r:"P4 − P3: +1,91 / +6,56 pp",c:"ch4_sim_figs.py",
+ what:"So sánh cặp trên cùng chuỗi ngẫu nhiên. Chỉ tiêu: lợi nhuận ròng sau chi phí SLA. Mặt phẳng chuyển pha quét k ∈ {0; 0,5; 1; 1,5; 2; 3} nhân |β_TAT|, |β_Queue| và π_SLA ∈ {0,5; 1; 2; 3; 5} lần biên. G1 thiết kế trước; G2 bổ sung sau chạy thử, cả hai được báo cáo.",
+ fx:"P1 Hiện trạng + FIFO     P2 CBPO + FIFO\nP3 Giả dược c + λ̄       P4 G2 + CBPO + λ_U(Q)\nP5 chỉ G2 + CBPO        P6 CBPO + λ_U(Q) + FIFO\nP7 G1 + CBPO + λ_U(Q)",
+ dec:[["yes","P4 − P3 (đồng bộ so với giả dược)","+1,91 pp (C1) / +6,56 pp (C2); vi phạm 37,67% → 36,0% / 32,2%"],["yes","P5 − P2 (chỉ phân luồng G2)","+2,40 / +7,10 pp: giá trị đến từ phân luồng"],["no","P6 − P3 (chỉ tín hiệu giá)","−0,41 pp ở cả C1 và C2"],["info","G2 dương 30/30 ô; G1 âm 15/30 ô (C1)","G1 đổi dấu khi π_SLA cao"]],
+ code:["ch4_sim.py","ch4_sim_figs.py"]},
+{id:"E1",lane:4,col:2,kind:"step",sec:"3.5",t:["Bộ chỉ số","& quy tắc báo cáo"],
+ m:"R² hiệu chỉnh · AUC · Brier · so với giả dược",r:"3 quy tắc báo cáo bắt buộc",c:"metric_compare.py",
+ what:"R² và R bội không dùng để so sánh mô hình khác số biến. Chỉ số quyết định của mọi chính sách giá là chênh lệch so với giả dược, không phải so với hiện trạng.",
+ facts:[["BT1","R² CV + sai số ngoài mẫu"],["BT2","AUC + Brier trên tập tách cụm"],["BT3","Δ so với nhánh giả dược"],["Mô phỏng","Δ cặp qua 200 lần lặp"]],
+ list:["Mô hình cấp dòng hàng báo cáo trên tập kiểm tra tách theo cụm","Mô hình hồi quy kèm chẩn đoán giả định trước khi diễn giải hệ số","Chính sách giá báo cáo tỷ lệ khuyến nghị nằm ngoài dải lịch sử"],
+ code:["metric_compare.py"]},
+{id:"E2",lane:4,col:3,kind:"out",sec:"3.6",t:["Thiết kế A/B","3 nhánh"],
+ m:"Ngẫu nhiên hóa cấp hồ sơ · Bonferroni",r:"ICC 0,1995 · 7,5 tháng",c:"ch4_icc_appx.py",
+ what:"Chương 4 là đánh giá phản thực dựa trên mô hình, chưa phải bằng chứng nhân quả. Thực nghiệm ngẫu nhiên hóa ở cấp hồ sơ, phân tầng theo hạng khách hàng × cường độ cạnh tranh, với chỉ tiêu bảo vệ là tỷ lệ thắng. Ba nhánh: đối chứng, can thiệp, giả dược nâng giá đồng loạt.",
+ fx:"DEFF = 1 + (m̄ − 1)·ICC\nMDE  = (z_{1−α/2} + z_{1−β})·σ·√(2·DEFF/n)",
+ facts:[["ICC lợi nhuận","0,1995"],["DEFF","1,818"],["2 nhánh (uplift 14%)","316 hồ sơ/nhánh · 4,1 tháng"],["3 nhánh","382 hồ sơ/nhánh · 7,5 tháng"],["3 nhánh, guard 5 pp","12,3 tháng"]],
+ code:["ch4_icc_appx.py","ch5_triage.py"]}
+];
+const BY={}; N.forEach(n=>BY[n.id]=n);
+const ORDER=["D1","D2","D3","D4","B1a","B1g","B1c","B1o","B2a","B2g","B2c","B2o","B3a","B3b","B3c","B3g","S1","S2","E1","E2"];
+
+/* edges: [from,to,label,type,key?] type: h (horizontal), v (vertical drop), path (custom pts) */
+const E=[
+ ["D1","D2","11.694","h"],["D2","D3","8.249","h"],["D3","D4","đặc trưng","h"],
+ ["D4","B1a","cấp hồ sơ · 5-fold","v"],
+ ["B1a","B1g","phần dư","h"],["B1g","B1c","gốc + HC3","h"],["B1c","B1o","OOF","h"],
+ ["B1o","B2a","TAT_pred (OOF)","v",1],
+ ["B2a","B2g","β̂","h"],["B2g","B2c","dùng PC","h"],["B2c","B2o","hiệu chuẩn","h"],
+ ["B2o","B3a","P(Win | p, x)","v",1],
+ ["B3a","B3b","p*","h"],["B3b","B3c","+ λ(Q)","h"],["B3c","B3g","đối chứng","h"],
+ ["B3g","S1","điểm mù tĩnh → liên kỳ","v",1],
+ ["S1","S2","C1 / C2","h"],["S2","E1","Δ cặp","h"],["E1","E2","kiểm chứng","h"]
+];
+const CTX=[
+ {from:"D3",to:"B3b",label:"MRB, N_eff",d:"M760,122 V138 H838 V554 H800",lx:844,ly:308,anchor:"start"},
+ {from:"D3",to:"B3c",label:"U_j",d:"M644,122 V138 H566 V554 H528",lx:572,ly:308,anchor:"start"},
+ {from:"B2o",to:"B3b",label:"P(Win) · dạng lai",d:"M914,422 C914,470 742,440 742,488",lx:836,ly:450},
+ {from:"B2o",to:"S1",label:"Σ_β · rút lại 200 lần",d:"M1072,398 H1090 V608 H294 V704 H256",lx:640,ly:621},
+ {from:"B1a",to:"S1",label:"β_Q → hiệu chỉnh C1",d:"M1072,248 H1100 V601 H302 V656 H256",lx:640,ly:596}
+];
+const THREADS=[
+ {id:"noi",name:"Chuỗi chuyển giao",nodes:["B1a","B1o","B2a","B2o","B3a","B3b","B3g","S1"],edges:["B1o>B2a","B2o>B3a","B3g>S1","B2o>B3b","B2o>S1","B1a>S1"],
+  note:"Ba điểm nối biến ba bài toán thành một chuỗi: TAT_pred đi vào BT2, P(Win | p, x) đi vào BT3, và kết luận âm của giả dược tĩnh mở ra mô phỏng liên kỳ (kèm Σ_β và β_Q)."},
+ {id:"rori",name:"Chống rò rỉ",nodes:["D3","D4","B1o","B2a","B2c","S1"],edges:["D3>D4","B1o>B2a"],
+  note:"Đặc trưng lịch sử chỉ dùng thông tin trước thời điểm tạo hồ sơ; chia tập theo cụm dự án; BT2 dùng TAT dự báo ngoài lớp; mô phỏng chỉ dùng ŵ_j, d_j dự báo lúc tiếp nhận."},
+ {id:"cong",name:"Cổng chống overclaim",nodes:["B1g","B2g","B3b","B3g","S2","E1","E2"],edges:["S2>E1","E1>E2"],
+  note:"Mỗi cổng có một phương án bị loại kèm bằng chứng: log-transform, Markup_Pct, Nash A/B, H1 Nash C (đồng nhất thức), mức tăng tĩnh của λ(Q). A/B là bước chuyển từ phản thực sang nhân quả."},
+ {id:"batdinh",name:"Bất định & độ vững",nodes:["D2","B2a","B3b","S1","S2","E2"],edges:["S1>S2"],
+  note:"Dữ liệu ẩn danh có tiêm nhiễu; hệ số Queue/TAT kiểm tra trên trạng thái trước đối soát; N ước lượng bằng 4 cách; β rút lại từ Σ̂; hai cách hiệu chỉnh C1/C2; mặt phẳng chuyển pha 6 × 5; ICC cho cỡ mẫu A/B."}
+];
+
+/* geometry */
+const CX=[158,430,702,974], W=196, H=84, HW=W/2, HH=H/2;
+const rowY=i=>80+150*i;
+const pos=n=>({x:CX[n.col],y:rowY(n.lane)});
+const laneColor=i=>"var(--"+LANES[i].id+")";
+const svg=document.getElementById("flow");
+const NS="http://www.w3.org/2000/svg";
+const el=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e};
+
+/* defs: arrow markers per lane */
+const defs=el("defs",{},svg);
+LANES.forEach((L,i)=>{const m=el("marker",{id:"ar-"+L.id,viewBox:"0 0 10 10",refX:"9",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"},defs);el("path",{d:"M0,0 L10,5 L0,10 z",style:"fill:"+laneColor(i)},m)});
+
+/* bands + lane labels */
+const gb=el("g",{},svg);
+LANES.forEach((L,i)=>{
+  const top=10+150*i;
+  el("rect",{class:"band",x:"8",y:top,width:"1094",height:"140",rx:"10"},gb);
+  el("rect",{x:"8",y:top,width:"4",height:"140",rx:"2",style:"fill:"+laneColor(i)},gb);
+  const t=el("text",{class:"lanelabel",transform:`translate(32 ${top+70}) rotate(-90)`,"text-anchor":"middle",style:"fill:"+laneColor(i)},gb);
+  t.textContent=L.name;
+  const s=el("text",{class:"lanesec",x:"1096",y:top+18,"text-anchor":"end"},gb); s.textContent="§"+L.sec;
+});
+
+/* edges */
+const gE=el("g",{},svg), gL=el("g",{},svg), gP=el("g",{},svg), gN=el("g",{},svg);
+const edgeEls={};
+function mainPath(a,b,type){
+  const A=pos(a),B=pos(b);
+  if(type==="v") return {d:`M${A.x},${A.y+HH} V${B.y-HH}`,lx:A.x+10,ly:(A.y+B.y)/2+4,anchor:"start"};
+  const dir=B.x>A.x?1:-1;
+  const x1=A.x+dir*HW+(a.kind==="gate"?dir*2:0), x2=B.x-dir*HW-(b.kind==="gate"?dir*6:0)-dir*1;
+  return {d:`M${x1},${A.y} H${x2}`,lx:(x1+x2)/2,ly:A.y-8,anchor:"middle"};
+}
+E.forEach(([f,t,label,type,key])=>{
+  const a=BY[f],b=BY[t],g=mainPath(a,b,type),c=laneColor(b.lane);
+  const p=el("path",{class:"edge main",d:g.d,"marker-end":`url(#ar-${LANES[b.lane].id})`,style:"--c:"+c},gE);
+  const tx=el("text",{class:"elabel"+(key?" key":""),x:g.lx,y:g.ly,"text-anchor":g.anchor},gL); tx.textContent=label;
+  edgeEls[f+">"+t]={path:p,label:tx,from:f,to:t,main:true,color:c};
+});
+CTX.forEach(cx=>{
+  const b=BY[cx.to],c=laneColor(b.lane);
+  const p=el("path",{class:"edge ctx",d:cx.d,"marker-end":`url(#ar-${LANES[b.lane].id})`,style:"--c:"+c},gE);
+  const tx=el("text",{class:"elabel ctxl",x:cx.lx,y:cx.ly,"text-anchor":cx.anchor||"middle"},gL); tx.textContent=cx.label;
+  edgeEls[cx.from+">"+cx.to]={path:p,label:tx,from:cx.from,to:cx.to,main:false,color:c};
+});
+
+/* nodes */
+const nodeEls={};
+function shapePath(n){
+  const {x,y}=pos(n);
+  if(n.kind==="gate"){const k=12;return `M${x-HW+k},${y-HH} H${x+HW-k} L${x+HW},${y} L${x+HW-k},${y+HH} H${x-HW+k} L${x-HW},${y} Z`}
+  const r=n.kind==="out"?HH:8;
+  return `M${x-HW+r},${y-HH} H${x+HW-r} A${r},${r} 0 0 1 ${x+HW},${y-HH+r} V${y+HH-r} A${r},${r} 0 0 1 ${x+HW-r},${y+HH} H${x-HW+r} A${r},${r} 0 0 1 ${x-HW},${y+HH-r} V${y-HH+r} A${r},${r} 0 0 1 ${x-HW+r},${y-HH} Z`;
+}
+N.forEach(n=>{
+  const {x,y}=pos(n), c=laneColor(n.lane);
+  const g=el("g",{class:"node "+n.kind,tabindex:"0",role:"button","aria-label":n.t.join(" ")+" — mục "+n.sec,style:"--c:"+c,"data-id":n.id},gN);
+  el("path",{class:"shape",d:shapePath(n)},g);
+  const left=x-HW+(n.kind==="gate"?18:(n.kind==="out"?24:12));
+  const sec=el("text",{class:"sec",x:left,y:y-HH+17},g); sec.textContent="§"+n.sec;
+  const num=el("text",{class:"sec",x:x+HW-(n.kind==="gate"?18:(n.kind==="out"?24:12)),y:y-HH+17,"text-anchor":"end"},g); num.textContent=String(ORDER.indexOf(n.id)+1).padStart(2,"0");
+  const ty=n.t.length>1?y-6:y+2;
+  n.t.forEach((line,i)=>{const tt=el("text",{class:"ttl",x:left,y:ty+i*16},g);tt.textContent=line});
+  const sub=el("text",{class:"sub",x:left,y:y+HH-10},g); sub.textContent=n.m;
+  nodeEls[n.id]={g,sub,avail:W-2*(left-(x-HW))};
+  g.addEventListener("click",()=>{stop();select(n.id,true)});
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();stop();select(n.id,true)}});
+  g.addEventListener("mouseenter",()=>hover(n.id,true));
+  g.addEventListener("mouseleave",()=>hover(n.id,false));
+});
+
+/* lens */
+let lens="m";
+function applyLens(){
+  N.forEach(n=>{const o=nodeEls[n.id],s=n[lens];o.sub.textContent=s;let k=s.length;try{while(k>4&&o.sub.getComputedTextLength()>o.avail){k--;o.sub.textContent=s.slice(0,k).trimEnd()+"…"}}catch(_){}});
+  document.querySelectorAll("#lens button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lens===lens));
+}
+document.querySelectorAll("#lens button").forEach(b=>b.addEventListener("click",()=>{lens=b.dataset.lens;applyLens()}));
+
+/* threads */
+let thread=null;
+const tWrap=document.getElementById("threads"), tNote=document.getElementById("threadnote");
+THREADS.forEach(t=>{
+  const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=t.name;b.setAttribute("aria-pressed","false");b.id="th-"+t.id;
+  b.addEventListener("click",()=>{thread=(thread===t.id?null:t.id);applyThread()});
+  tWrap.appendChild(b);
+});
+function applyThread(){
+  THREADS.forEach(t=>document.getElementById("th-"+t.id).setAttribute("aria-pressed",thread===t.id));
+  Object.values(nodeEls).forEach(o=>o.g.classList.remove("on"));
+  Object.values(edgeEls).forEach(o=>{o.path.classList.remove("on");o.label.classList.remove("on")});
+  if(!thread){svg.classList.remove("dim");tNote.textContent="";return}
+  const t=THREADS.find(x=>x.id===thread);
+  svg.classList.add("dim");
+  t.nodes.forEach(id=>nodeEls[id].g.classList.add("on"));
+  t.edges.forEach(k=>{const e=edgeEls[k];if(e){e.path.classList.add("on");e.label.classList.add("on")}});
+  tNote.textContent=t.note;
+}
+
+/* hover: show context edges + thicken */
+function hover(id,on){
+  Object.values(edgeEls).forEach(e=>{
+    if(e.from===id||e.to===id){
+      e.path.classList.toggle("hot",on||(sel&&(e.from===sel||e.to===sel)));
+      if(!e.main){const keep=sel&&(e.from===sel||e.to===sel);e.path.classList.toggle("show",on||keep);e.label.classList.toggle("show",on||keep)}
+    }
+  });
+}
+
+/* panel */
+const panel=document.getElementById("panel");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function linkBtns(ids){return ids.map(id=>{const n=BY[id];return `<button type="button" data-go="${id}" style="--c:${laneColor(n.lane)}"><i></i>${esc(n.t.join(" "))}</button>`}).join("")}
+function render(id){
+  const n=BY[id], c=laneColor(n.lane);
+  const ins=Object.values(edgeEls).filter(e=>e.to===id).map(e=>e.from);
+  const outs=Object.values(edgeEls).filter(e=>e.from===id).map(e=>e.to);
+  const idx=ORDER.indexOf(id);
+  let h=`<div class="phead" style="--c:${c}"><div class="ptag"><span class="lane">${esc(LANES[n.lane].name)}</span><span>§${esc(n.sec)}</span><span class="kind">${KIND[n.kind]}</span><span>bước ${String(idx+1).padStart(2,"0")}/20</span></div><h2>${esc(n.t.join(" "))}</h2></div><div class="pbody">`;
+  h+=`<div><h3>Làm gì và vì sao</h3><p>${esc(n.what)}</p></div>`;
+  if(n.fx) h+=`<div><h3>Đặc tả</h3><div class="fx">${esc(n.fx)}</div></div>`;
+  if(n.dec) h+=`<div><h3>${n.kind==="gate"?"Phương án và quyết định":"Kết quả so sánh"}</h3><div class="dec">${n.dec.map(([v,a,b])=>`<div class="opt ${v}"><span class="v">${v==="yes"?"✓":v==="no"?"✕":"·"}</span><div><b>${esc(a)}</b><small>${esc(b)}</small></div></div>`).join("")}</div></div>`;
+  if(n.facts) h+=`<div><h3>Số liệu</h3><dl class="facts">${n.facts.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl></div>`;
+  if(n.list) h+=`<div><h3>Ghi chú</h3><ul>${n.list.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`;
+  if(n.warn) h+=`<p class="warn">${n.warn}</p>`;
+  if(ins.length) h+=`<div><h3>Nhận đầu vào từ</h3><div class="links">${linkBtns(ins)}</div></div>`;
+  if(outs.length) h+=`<div><h3>Chuyển tiếp tới</h3><div class="links">${linkBtns(outs)}</div></div>`;
+  h+=`<div><h3>Mã nguồn</h3><div class="code">${n.code.map(x=>`<span>${esc(x)}</span>`).join("")}</div></div>`;
+  h+=`</div><div class="pfoot"><button class="btn" type="button" data-step="-1" ${idx===0?"disabled":""}>← Bước trước</button><button class="btn" type="button" data-step="1" ${idx===ORDER.length-1?"disabled":""}>Bước sau →</button></div>`;
+  panel.innerHTML=h;
+  panel.style.setProperty("--c",c);
+  panel.scrollTop=0;
+  panel.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{stop();select(b.dataset.go,true)}));
+  panel.querySelectorAll("[data-step]").forEach(b=>b.addEventListener("click",()=>{stop();step(+b.dataset.step)}));
+}
+
+/* rail */
+const rail=document.getElementById("rail");
+ORDER.forEach((id,i)=>{const b=document.createElement("button");b.type="button";b.textContent=String(i+1).padStart(2,"0");b.title=BY[id].t.join(" ");b.style.setProperty("--c",laneColor(BY[id].lane));b.addEventListener("click",()=>{stop();select(id,true)});rail.appendChild(b)});
+function updateRail(id){const k=ORDER.indexOf(id);[...rail.children].forEach((b,i)=>{b.classList.toggle("cur",i===k);b.classList.toggle("done",i<k)});document.getElementById("counter").textContent=`Bước ${String(k+1).padStart(2,"0")}/20`}
+
+/* selection */
+let sel=null;
+function select(id,pulse){
+  if(sel) {nodeEls[sel].g.classList.remove("sel","flash");hover(sel,false)}
+  const prev=sel; sel=id;
+  const g=nodeEls[id].g; g.classList.add("sel");
+  if(pulse){g.classList.remove("flash");void g.getBBox();g.classList.add("flash")}
+  Object.values(edgeEls).forEach(e=>{
+    const touch=e.from===id||e.to===id;
+    e.path.classList.toggle("hot",touch);
+    if(!e.main){e.path.classList.toggle("show",touch);e.label.classList.toggle("show",touch)}
+  });
+  render(id); updateRail(id);
+  if(pulse){Object.values(edgeEls).filter(e=>e.to===id).forEach(e=>launch(e,(e.main?1:.8)))}
+  try{localStorage.setItem("wf-ch3-sel",id)}catch(_){}
+}
+function step(d){const k=ORDER.indexOf(sel);const n=Math.max(0,Math.min(ORDER.length-1,k+d));if(n!==k)select(ORDER[n],true)}
+document.getElementById("prev").addEventListener("click",()=>{stop();step(-1)});
+document.getElementById("next").addEventListener("click",()=>{stop();step(1)});
+document.addEventListener("keydown",e=>{if(e.target.closest("input,textarea"))return;if(e.key==="ArrowRight"){stop();step(1)}else if(e.key==="ArrowLeft"){stop();step(-1)}});
+
+/* play */
+let timer=null;
+const playBtn=document.getElementById("play"),playTxt=document.getElementById("playtxt"),playIcon=document.getElementById("playicon");
+function setPlayUI(on){playTxt.textContent=on?"Tạm dừng":"Chạy tuần tự";playIcon.setAttribute("d",on?"M4 2.5h3v11H4zM9 2.5h3v11H9z":"M4 2.5v11l9-5.5z");playBtn.setAttribute("aria-label",on?"Tạm dừng":"Chạy tuần tự")}
+function stop(){if(timer){clearInterval(timer);timer=null;setPlayUI(false)}}
+function play(){
+  if(timer){stop();return}
+  if(ORDER.indexOf(sel)===ORDER.length-1) select(ORDER[0],true); else step(1);
+  setPlayUI(true);
+  timer=setInterval(()=>{if(ORDER.indexOf(sel)>=ORDER.length-1){stop();return}step(1)},2600);
+}
+playBtn.addEventListener("click",play);
+
+/* packets */
+const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const live=[];
+function launch(e,scale){
+  if(reduce)return;
+  const c=el("circle",{class:"pkt",r:String(5*scale),style:"fill:"+e.color},gP);
+  live.push({e,c,t0:performance.now(),dur:900});
+}
+const amb=[];
+if(!reduce){
+  Object.values(edgeEls).filter(e=>e.main).forEach((e,i)=>{
+    const c=el("circle",{class:"pkt amb",r:"2.6",style:"fill:"+e.color},gP);
+    amb.push({e,c,len:e.path.getTotalLength(),off:(i*0.137)%1,speed:e.label.classList.contains("key")?0.42:0.28});
+  });
+}
+function frame(now){
+  amb.forEach(a=>{const L=a.len;const pt=a.e.path.getPointAtLength(((now/1000*a.speed*60/L)+a.off)%1*L);a.c.setAttribute("cx",pt.x);a.c.setAttribute("cy",pt.y)});
+  for(let i=live.length-1;i>=0;i--){const p=live[i];const k=(now-p.t0)/p.dur;if(k>=1){p.c.remove();live.splice(i,1);continue}
+    const L=p.e.path.getTotalLength();const ease=1-Math.pow(1-k,2);const pt=p.e.path.getPointAtLength(ease*L);p.c.setAttribute("cx",pt.x);p.c.setAttribute("cy",pt.y);p.c.setAttribute("opacity",String(k>.85?(1-k)/.15:1))}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* boot */
+applyLens();
+let start="D1"; try{const s=localStorage.getItem("wf-ch3-sel");if(s&&BY[s])start=s}catch(_){}
+select(start,false);
+})();
+</script>
