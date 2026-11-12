@@ -1,0 +1,253 @@
+<title>Bản đồ bảo vệ luận văn</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: một cột đọc từ trên xuống — câu kết luận, bốn làn kết quả, biểu đồ chính sách giá, hai giả thuyết, thẻ luyện hỏi đáp. Cùng hệ màu làn với trang Workflow. */
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --surface-2:#F6F8FA; --ink:#16202A; --muted:#566373; --faint:#8A96A3; --line:#CBD3DC;
+  --bt1:#0B7A7E; --bt2:#3B55C4; --bt3:#A8670E; --sim:#B03A55;
+  --yes:#1D7A46; --no:#B23A2E; --mid:#9A6A00;
+  --font-display:"Be Vietnam Pro",ui-sans-serif,system-ui,sans-serif;
+  --font-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161C; --surface:#18212A; --surface-2:#1E2832; --ink:#E6ECF1; --muted:#9AA8B6; --faint:#6F7D8B; --line:#33414E;
+  --bt1:#3CC2C2; --bt2:#8C9DFF; --bt3:#E6A644; --sim:#F07A93; --yes:#5BC88A; --no:#F2826F; --mid:#E0B54A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161C; --surface:#18212A; --surface-2:#1E2832; --ink:#E6ECF1; --muted:#9AA8B6; --faint:#6F7D8B; --line:#33414E;
+  --bt1:#3CC2C2; --bt2:#8C9DFF; --bt3:#E6A644; --sim:#F07A93; --yes:#5BC88A; --no:#F2826F; --mid:#E0B54A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15.5px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:36px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,4vw,40px);line-height:1.15;margin:8px 0 12px;text-wrap:balance;letter-spacing:-.01em;max-width:22ch}
+h2{font-family:var(--font-display);font-weight:700;font-size:21px;margin:0 0 4px;text-wrap:balance}
+.sub{color:var(--muted);margin:0;max-width:68ch}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.links a{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;border-radius:8px;padding:8px 14px;font-weight:500;font-size:14px}
+.links a:hover{border-color:var(--muted)}
+.links a span{font-family:var(--font-mono);font-size:11.5px;color:var(--muted)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--bt2);outline-offset:2px}
+
+.lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:14px}
+.lane{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.lane .tag{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--c);font-weight:500}
+.lane h3{font-family:var(--font-display);font-size:16px;margin:0;line-height:1.3}
+.lane p{margin:0;font-size:14px;color:var(--muted)}
+.lane dl{margin:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:13.5px;border-top:1px solid var(--line);padding-top:10px}
+.lane dt{color:var(--muted)} .lane dd{margin:0;font-family:var(--font-mono);font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.verdict{align-self:flex-start;font-family:var(--font-mono);font-size:11.5px;border-radius:999px;padding:2px 9px;border:1px solid currentColor}
+.v-yes{color:var(--yes)} .v-no{color:var(--no)} .v-mid{color:var(--mid)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.chartbox{overflow-x:auto}
+svg.chart{display:block;width:100%;min-width:560px;height:auto}
+.chart text{font-family:var(--font-body);font-size:12.5px;fill:var(--ink)}
+.chart .val{font-family:var(--font-mono);font-size:12px}
+.chart .axis{fill:var(--faint);font-family:var(--font-mono);font-size:11px}
+.note{font-size:13.5px;color:var(--muted);margin:0}
+
+.hyp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.hcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.hcard h3{margin:0;font-family:var(--font-display);font-size:16px}
+.hcard ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.lever{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+@media (max-width:560px){.lever{grid-template-columns:1fr}}
+.lv{border:1px dashed var(--line);border-radius:8px;padding:12px;font-size:14px}
+.lv b{font-family:var(--font-display);display:block;margin-bottom:2px}
+
+.quiz{display:flex;flex-direction:column;gap:12px}
+.qtools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;min-height:220px;display:flex;flex-direction:column;gap:14px}
+.card .meta{font-family:var(--font-mono);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.card .q{font-family:var(--font-display);font-size:19px;font-weight:600;line-height:1.35;margin:0;text-wrap:balance}
+.card .a{margin:0;font-size:15px;border-left:3px solid var(--bt2);padding:4px 0 4px 14px}
+.card .a.hiddenA{color:transparent;text-shadow:none;background:repeating-linear-gradient(90deg,var(--surface-2) 0 10px,var(--line) 10px 11px);border-left-color:var(--line);border-radius:4px;user-select:none}
+.qbtns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:7px;padding:7px 13px;font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+footer{font-size:13px;color:var(--muted)}
+footer code{font-family:var(--font-mono);font-size:12.5px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Luận văn ThS ISE · bản v3.0 · tổng quan để ôn và tham vấn</div>
+    <h1>Giá cho biên lợi nhuận, điều phối cho năng lực</h1>
+    <p class="sub">Báo giá B2B vật tư liên kết và MRO: 1.500 hồ sơ, 8.249 dòng hàng, 38,6 quyết định giá mỗi ngày. 37,67% hồ sơ trễ cam kết 7 ngày, và markup gần như bất động (0,35 điểm %) trong khi tỷ lệ thắng dao động 22,1 điểm % theo cạnh tranh. Ba bài toán nối thành chuỗi, cộng một mô phỏng liên kỳ, dẫn đến một kết luận: định giá theo xác suất thắng nâng biên lợi nhuận, còn giá bóng năng lực chỉ tạo giá trị khi dùng để xếp thứ tự tiếp nhận.</p>
+    <nav class="links" aria-label="Tài liệu đi kèm">
+      <a href="https://claude.ai/artifact/DHi2ghNsW3qBDMbSTgz2GT" target="_blank" rel="noopener">Cẩm nang bảo vệ v3.0 <span>đọc sâu</span></a>
+      <a href="https://claude.ai/artifact/YUduUaFg4223XbzJMsCkk3" target="_blank" rel="noopener">Workflow phương pháp luận <span>Chương 3</span></a>
+    </nav>
+  </header>
+
+  <section aria-labelledby="h-lanes">
+    <h2 id="h-lanes">Bốn câu hỏi, bốn câu trả lời</h2>
+    <p class="sub">Đầu ra của mỗi phần là đầu vào của phần sau: TAT dự báo đi vào BT2, xác suất thắng đi vào BT3, kết luận âm của giả dược tĩnh mở ra mô phỏng.</p>
+    <div class="lanes">
+      <article class="lane" style="--c:var(--bt1)">
+        <div class="tag">BT1 · §4.1</div>
+        <h3>Biến động thời gian phân bố thế nào giữa 4 khâu?</h3>
+        <span class="verdict v-yes">Trả lời được</span>
+        <p>Pricing chậm nhất, Sales khó đoán nhất; gần nửa biến động là đồng biến động. Log bị bác bỏ, chọn thang gốc + HC3.</p>
+        <dl><dt>CV Sales</dt><dd>0,760</dd><dt>Hiệp phương sai</dt><dd>47,4%</dd><dt>r(Sales, Pricing)</dt><dd>−0,037</dd><dt>TAT_pred OOF MAE</dt><dd>0,8437 ngày</dd></dl>
+      </article>
+      <article class="lane" style="--c:var(--bt2)">
+        <div class="tag">BT2 · §4.2</div>
+        <h3>Yếu tố nào quyết định xác suất thắng?</h3>
+        <span class="verdict v-mid">Trả lời được, có điều kiện</span>
+        <p>Giá tương đối và năng lực nhà cung cấp chi phối. Hàng đợi và TAT âm, nhưng là liên hệ có điều kiện và nhạy với cách chốt kết quả.</p>
+        <dl><dt>AUC ngoài mẫu</dt><dd>0,781</dd><dt>β giá (T/p)</dt><dd>+0,838</dd><dt>β Queue / TAT</dt><dd>−0,222 / −0,093</dd><dt>AUC không có giá</dt><dd>0,719</dd></dl>
+      </article>
+      <article class="lane" style="--c:var(--bt3)">
+        <div class="tag">BT3 · §4.3</div>
+        <h3>Giá nào tối đa hóa lợi nhuận kỳ vọng?</h3>
+        <span class="verdict v-yes">CBPO dương, bền vững</span>
+        <p>CBPO thắng mọi phương án; Nash A/B suy biến, Nash C phục hồi nhưng vẫn thua; λ(Q) cộng vào giá thua giả dược.</p>
+        <dl><dt>CBPO Realistic</dt><dd>+13,91%</dd><dt>Nash C (kẹp)</dt><dd>+10,45%</dd><dt>λ(Q) − giả dược</dt><dd>−0,18 pp</dd><dt>Tỷ lệ kẹp CBPO</dt><dd>36,4%</dd></dl>
+      </article>
+      <article class="lane" style="--c:var(--sim)">
+        <div class="tag">Mô phỏng · §4.4</div>
+        <h3>Cùng giá bóng, dùng để xếp thứ tự thì sao?</h3>
+        <span class="verdict v-mid">Ủng hộ có điều kiện</span>
+        <p>Phân luồng G2 tại pha Sales-WBS vượt giả dược ở mọi ô của mặt phẳng chuyển pha. Đây là kết quả mô phỏng.</p>
+        <dl><dt>P4 − P3 (C1 / C2)</dt><dd>+1,91 / +6,56 pp</dd><dt>Vi phạm SLA</dt><dd>36,0% / 32,2%</dd><dt>λ chỉ trong giá</dt><dd>−0,41 pp</dd><dt>G2 dương</dt><dd>30/30 ô</dd></dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-chart">
+    <div>
+      <h2 id="h-chart">Chỉ CBPO và Nash C tạo uplift mà không nhờ kẹp biên</h2>
+      <p class="sub">Lợi nhuận kỳ vọng so với thực nhận trên tập kiểm tra 1.366 dòng hàng (Bảng 4.13). Vạch nhạt là tỷ lệ khuyến nghị bị kẹp vào dải markup lịch sử [P5; P95].</p>
+    </div>
+    <div class="chartbox"><svg class="chart" id="chart" viewBox="0 0 760 360" role="img" aria-label="Uplift các chính sách giá"></svg></div>
+    <p class="note">Nash A +4,06% là sản phẩm của kẹp trần (85% dòng hàng), không phải của cơ chế cân bằng. Hai cặp cuối cho thấy mức tăng của λ(Q) chỉ là nâng giá đồng loạt: giả dược luôn cao hơn. Mô hình lạc quan khoảng +1,9% tại giá lịch sử.</p>
+  </section>
+
+  <section aria-labelledby="h-hyp">
+    <h2 id="h-hyp">Hai giả thuyết và hai đòn bẩy</h2>
+    <div class="hyp" style="margin-top:12px">
+      <article class="hcard">
+        <span class="verdict v-no">H1 bị bác bỏ</span>
+        <h3>Giá cân bằng tốt hơn best-response?</h3>
+        <ul>
+          <li>Giá lịch sử: b = −0,0033, không bác bỏ b = 0 (p 0,169). Cost-plus tĩnh.</li>
+          <li>Giá tối ưu FOC: b = −0,370. Đúng chiều 1/N, khoảng 37% độ lớn.</li>
+          <li>Nash C: b = −1,121 là đồng nhất thức, không tính là bằng chứng.</li>
+          <li>Nash C (+10,45%) vẫn thấp hơn CBPO (+13,91%).</li>
+        </ul>
+      </article>
+      <article class="hcard">
+        <span class="verdict v-mid">H2: bác bỏ tĩnh, ủng hộ có điều kiện liên kỳ</span>
+        <h3>Giá bóng năng lực có tạo giá trị?</h3>
+        <ul>
+          <li>Trong giá, dữ liệu tĩnh: −0,18 pp (λ) và −0,23 pp (λ·U) so với giả dược.</li>
+          <li>Vi phạm cố định 40,68% dưới mọi chính sách giá: giá không giải phóng hàng đợi.</li>
+          <li>Trong phân luồng, mô phỏng: +1,91 đến +6,56 pp so với giả dược.</li>
+        </ul>
+        <div class="lever">
+          <div class="lv"><b style="color:var(--bt3)">Đòn bẩy giá</b>CBPO trên hồ sơ đã xếp lịch. Đo bằng biên lợi nhuận.</div>
+          <div class="lv"><b style="color:var(--sim)">Đòn bẩy điều phối</b>G2 tại Sales-WBS. Đo bằng vi phạm và thời gian chờ hồ sơ giá trị cao.</div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="quiz" aria-labelledby="h-quiz">
+    <div>
+      <h2 id="h-quiz">Luyện trả lời hội đồng</h2>
+      <p class="sub">Đọc câu hỏi, tự trả lời thành tiếng trong 30–60 giây, rồi mở đáp án. Phím → sang câu, phím cách để mở.</p>
+    </div>
+    <div class="qtools" id="qtools" role="toolbar" aria-label="Lọc chủ đề"></div>
+    <div class="card" aria-live="polite">
+      <div class="meta"><span id="qtopic"></span><span id="qcount"></span></div>
+      <p class="q" id="qtext"></p>
+      <p class="a hiddenA" id="atext"></p>
+      <div class="qbtns">
+        <button class="btn primary" id="reveal" type="button">Hiện trả lời</button>
+        <button class="btn" id="prev" type="button">Câu trước</button>
+        <button class="btn" id="next" type="button">Câu sau</button>
+        <button class="btn" id="shuffle" type="button">Xáo thứ tự</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>Số liệu lấy từ <code>docs/SoT_v3_SoLieuChuan.md</code> và bản luận văn v3.0. Dữ liệu đã ẩn danh và tiêm nhiễu; mọi uplift là lợi nhuận kỳ vọng theo mô hình, chưa phải hiệu ứng nhân quả.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- chart ---------- */
+const P=[
+ {n:"Cost-Plus (markup trung vị)",u:0.27,k:null,c:"--faint"},
+ {n:"CBPO Realistic",u:13.91,k:36.4,c:"--bt3",hl:1},
+ {n:"Nash A — cận tuyệt đối",u:4.06,k:85.4,c:"--faint"},
+ {n:"Nash B — cận tỷ lệ",u:-29.90,k:100,c:"--no"},
+ {n:"Nash C — cận dòng hàng (kẹp)",u:10.45,k:32.4,c:"--bt2"},
+ {n:"Nash C + phản hồi logistic",u:12.85,k:null,c:"--bt2"},
+ {n:"CBPO + λ(Q)",u:14.96,k:null,c:"--sim"},
+ {n:"Giả dược λ hằng số",u:15.14,k:null,c:"--faint"},
+ {n:"CBPO + λ(Q)·U",u:15.09,k:null,c:"--sim"},
+ {n:"Giả dược (bản λ·U)",u:15.32,k:null,c:"--faint"}
+];
+const NS="http://www.w3.org/2000/svg", svg=document.getElementById("chart");
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+const L=232, R=632, lo=-32, hi=20, X=v=>L+(v-lo)/(hi-lo)*(R-L), rowH=30, top=26;
+const ticks=[-30,-20,-10,0,10,20];
+ticks.forEach(t=>{el("line",{x1:X(t),x2:X(t),y1:top-8,y2:top+P.length*rowH,stroke:t===0?"var(--muted)":"var(--line)","stroke-width":t===0?1.2:1},svg);const tx=el("text",{x:X(t),y:top+P.length*rowH+18,"text-anchor":"middle",class:"axis"},svg);tx.textContent=(t>0?"+":"")+t+"%"});
+P.forEach((p,i)=>{
+  const y=top+i*rowH, x0=X(0), x1=X(p.u);
+  const lab=el("text",{x:L-10,y:y+15,"text-anchor":"end"},svg); lab.textContent=p.n; if(p.hl)lab.setAttribute("font-weight","600");
+  el("rect",{x:Math.min(x0,x1),y:y+5,width:Math.max(2,Math.abs(x1-x0)),height:16,rx:3,style:"fill:var("+p.c+")"},svg);
+  const v=el("text",{x:p.u>=0?x1+6:x0+6,y:y+17,"text-anchor":"start",class:"val"},svg);
+  v.textContent=(p.u>0?"+":"")+p.u.toFixed(2).replace(".",",")+"%"+(p.k!==null?"  · kẹp "+String(p.k).replace(".",",")+"%":"");
+});
+svg.setAttribute("viewBox","0 0 760 "+(top+P.length*rowH+30));
+
+/* ---------- quiz ---------- */
+const Q=[
+ ["Tổng quát","Đóng góp mới của luận văn, nói trong một câu?","Trên dữ liệu báo giá B2B thực, giá bóng năng lực chỉ tạo giá trị khi điều phối thứ tự tiếp nhận chứ không khi gắn vào giá, và cân bằng thuần giá chỉ dùng được khi cận chi phí lấy từ phía cầu ở cấp dòng hàng; kèm quy trình giả dược, tỷ lệ kẹp và độ nhạy để phát hiện những điều đó."],
+ ["Tổng quát","Vì sao bài toán này quan trọng?","Quyết định lặp lại 38,6 lần mỗi ngày; hai bất thường đo được (37,7% trễ SLA, markup bất động 0,35 pp so với tỷ lệ thắng dao động 22,1 pp); thời gian và giá tranh nhau trên cùng năng lực Pricing nên không thể giải riêng."],
+ ["Tổng quát","Nếu chỉ giữ một kết quả?","CBPO +13,91%: dương, bền qua mọi phân tích độ nhạy, không phụ thuộc N, đặc tả miền chi phí hay π_SLA, và đã có thiết kế A/B để xác nhận."],
+ ["Tổng quát","Vì sao gọi là kết quả âm có giá trị?","Vì được chẩn đoán đủ: biết vì sao thất bại, biết điều kiện đảo chiều (N, π_SLA, k), và có cổng ba bước để nghiên cứu sau kiểm tra trước khi đầu tư."],
+ ["BT1","Vì sao không dùng log-transform?","Trên thang gốc Breusch–Pagan p = 0,609 (phương sai đều). Log làm p < 0,0001 và MAE xấu đi 8,4%. Vấn đề thật là phần dư lệch; HC3 bảo vệ suy luận mà không đổi thang đo."],
+ ["BT1","Tách theo khâu có cải thiện dự báo không?","Không đáng kể: MAE 0,8372 so với 0,8437 (0,77%). Giá trị nằm ở chẩn đoán: Sales CV 0,760, hiệp phương sai 47,4%, Pricing độc lập với Sales (r = −0,037)."],
+ ["BT1","Phần dư không chuẩn thì kết quả còn tin được không?","Hệ số OLS vẫn không chệch (Gauss–Markov không cần chuẩn); n = 1.500 nên suy luận tiệm cận ổn; HC3 bảo vệ thêm trước phương sai không đều và đòn bẩy cao."],
+ ["BT2","Vì sao biến giá là T/p, không phải markup?","Markup có β = +0,014, p = 0,614, AUC 0,7191, ngang mô hình không có giá. Markup tính từ giá vốn nội bộ và gần như hằng số nên không mang thông tin thị trường."],
+ ["BT2","β_Queue = −0,222 có phải hiệu ứng nhân quả?","Không. Đó là liên hệ có điều kiện: độ phức tạp ẩn có thể vừa làm chờ lâu vừa làm khó thắng. Trên trạng thái trước đối soát hệ số còn −0,061 (p 0,060). Mặt phẳng chuyển pha quét k từ 0 để kiểm soát rủi ro này."],
+ ["BT2","Vì sao chọn logistic mà không phải XGBoost?","Cần hệ số diễn giải được và xác suất hiệu chuẩn để nhân với biên lợi nhuận. XGB đạt 0,7837 so với 0,7808, nằm trong khoảng tin cậy: không có bằng chứng bỏ sót phi tuyến."],
+ ["BT3","Viết điều kiện bậc nhất.","E[π] = (p − c)P(p). Đạo hàm P + (p − c)P(1 − P)(−γT/p²) = 0, chia P được γT(p − c)(1 − P) = p². P phụ thuộc p nên giải số (dò lưới + Brent); đạo hàm bậc hai đổi dấu nên có cực đại nội suy duy nhất."],
+ ["BT3","CBPO có phải cân bằng Nash không?","Không. CBPO là best-response một phía, coi hành vi đối thủ cố định. P(Win | p, x) cũng không phải hậu nghiệm Bayes; chữ Bayesian chỉ nằm trong khái niệm Bayesian Nash."],
+ ["BT3","Vì sao Nash A, B thất bại còn C thì không?","A, B đo miền chi phí của đối thủ (δ_B = 0,18), kẹp 85% và 100%. C dùng cận dự trữ cấp dòng hàng chứa vị thế phi giá (δ_C ≈ 0,99), kẹp 32%. Tỷ lệ thắng 74,9% ở N = 2 vượt 1/N: thị trường không đối xứng thuần giá."],
+ ["BT3","Vì sao H1 với Nash C (b ≈ −1) không tính là bằng chứng?","Vì ln(p*_C/c − 1) = ln δ_C − ln N theo cách xây dựng; độ dốc bằng −1 cộng một số hạng hiệp phương sai. Đó là đồng nhất thức, chỉ là kiểm tra nhất quán."],
+ ["BT3","Giả dược làm gì và kết luận gì?","Thay λ(Q) bằng hằng số cùng trung bình, giữ nguyên mọi thứ khác. λ(Q) có vẻ thêm 1,05 pp so với CBPO nhưng thua giả dược 0,18 pp: toàn bộ mức tăng là nâng giá đồng loạt."],
+ ["Mô phỏng","Mô phỏng có phải bịa dữ liệu không?","Không. Nó phát lại 1.500 hồ sơ thật, chỉ đổi thời gian chờ Pricing và cộng chênh lệch vào giá trị quan sát; hiện trạng tái lập đúng 37,67%. Kết quả được khai báo là phản thực dựa trên mô hình."],
+ ["Mô phỏng","Vì sao G2 mà không phải G1?","G1 hoãn thay vì từ chối nên hồ sơ bị hoãn vẫn trễ; G1 âm ở 15/30 ô khi π_SLA cao. G2 đưa chi phí trễ của chính hồ sơ vào chỉ số ưu tiên, dương 30/30 ô. G2 bổ sung sau chạy thử và đã khai báo."],
+ ["Mô phỏng","Nếu khách hàng không phạt phản hồi chậm (k = 0)?","G2 vẫn dương +0,17 đến +0,89 pp ở C1 nhờ riêng phần giảm chi phí vi phạm. Kết luận bền về dấu; độ lớn phụ thuộc k và dư địa điều phối."],
+ ["A/B","Vì sao ngẫu nhiên hóa theo hồ sơ và cần bao lâu?","ICC 0,1995, DEFF 1,818: mỗi dòng chỉ mang khoảng 55% thông tin. Ba nhánh cần 382 hồ sơ mỗi nhánh, 7,5 tháng cho uplift 14%, và 12,3 tháng cho biên bảo vệ tỷ lệ thắng 5 pp."],
+ ["A/B","Doanh nghiệp nên làm gì ngày mai?","A/B ba nhánh cho CBPO; thí điểm G2 ở chế độ xếp thứ tự tại Sales-WBS; đo chi phí kế toán một lần trễ và độ nhạy thời gian của khách; giảm số lần làm rõ bản vẽ ở khâu tiếp nhận."]
+];
+const topics=["Tất cả",...new Set(Q.map(q=>q[0]))];
+let filt="Tất cả", order=Q.map((_,i)=>i), pos=0, shown=false;
+const tools=document.getElementById("qtools");
+topics.forEach(t=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=t;b.setAttribute("aria-pressed",String(t===filt));b.addEventListener("click",()=>{filt=t;pos=0;[...tools.children].forEach(c=>c.setAttribute("aria-pressed",String(c.textContent===t)));render()});tools.appendChild(b)});
+const list=()=>order.filter(i=>filt==="Tất cả"||Q[i][0]===filt);
+const qt=document.getElementById("qtext"),at=document.getElementById("atext"),tp=document.getElementById("qtopic"),ct=document.getElementById("qcount"),rv=document.getElementById("reveal");
+function render(){const L=list();if(pos>=L.length)pos=0;const q=Q[L[pos]];tp.textContent=q[0];ct.textContent=(pos+1)+" / "+L.length;qt.textContent=q[1];at.textContent=q[2];shown=false;at.classList.add("hiddenA");at.setAttribute("aria-hidden","true");rv.textContent="Hiện trả lời"}
+function toggle(){shown=!shown;at.classList.toggle("hiddenA",!shown);at.setAttribute("aria-hidden",String(!shown));rv.textContent=shown?"Ẩn trả lời":"Hiện trả lời"}
+function step(d){const n=list().length;pos=(pos+d+n)%n;render()}
+rv.addEventListener("click",toggle);
+document.getElementById("next").addEventListener("click",()=>step(1));
+document.getElementById("prev").addEventListener("click",()=>step(-1));
+document.getElementById("shuffle").addEventListener("click",()=>{for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}pos=0;render()});
+document.addEventListener("keydown",e=>{if(e.target.closest("button,input,textarea"))return;if(e.key==="ArrowRight")step(1);else if(e.key==="ArrowLeft")step(-1);else if(e.key===" "){e.preventDefault();toggle()}});
+render();
+})();
+</script>
